@@ -8,6 +8,7 @@ TagManager:
   - Eraser
   - Phase Text
   - Phase Subtext
+  - Border
   layers:
   - Default
   - TransparentFX

@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Piece : MonoBehaviour
 {
     public class PieceStruct
     {
+        // enable to make each tile indicate which piece it came from.
+        bool showPieceNumbers = false;
+
         // struct constructor
         public PieceStruct(PieceSO p_in, int id_in, GameObject pieceObj_in, GameObject tile)
         {
@@ -24,6 +28,7 @@ public class Piece : MonoBehaviour
             coll.offset += new Vector2((width % 2 == 0) ? -.5f : 0, (height % 2 == 0) ? .5f : 0);
             coll.size = new Vector2(width, height);
             // fill it up with tiles
+            //Debug.Log(p.level.ToString() + p.name + " ISNULL " + (p is null) + " DATA IS NULL " + (p.data is null));
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
@@ -33,7 +38,7 @@ public class Piece : MonoBehaviour
                         Vector3 pos = new Vector3(i, j - (p.height - 1), 0);
                         GameObject temp = Instantiate(tile, pieceObj.transform, false);
                         temp.transform.localPosition = pos;
-                        temp.GetComponentInChildren<TextMeshPro>().text = id_in.ToString();
+                        if(showPieceNumbers) temp.GetComponentInChildren<TextMeshPro>().text = id_in.ToString();
                         tiles[i, j] = temp;
                     }
                 }
@@ -47,46 +52,59 @@ public class Piece : MonoBehaviour
         /// </summary>
         /// <param name="anchorPosition"></param>
         /// <param name="board"></param>
-        public void UpdateTiles(Vector2Int anchorPosition, bool[,] board)
+        public void UpdateTiles(Vector2Int anchorPosition, GameObject[,] tileBoard, BoardController bc)
         {
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
                 {
-                    if (tiles[i, j] is not null)
+                    if (tiles[i, j])
                     {
-                        bool correct = board[anchorPosition.x + i, anchorPosition.y + j];
-                        tiles[i, j].GetComponent<TileController>().SetSprite(correct);
+                        TileController tc = tiles[i, j].GetComponent<TileController>();
+                        tc.SetSprite(tc.GetStatus(anchorPosition.x + i, anchorPosition.y + j, tileBoard, bc));
                     }
                 }
             }
         }
 
         /// <summary>
-        /// adds child tiles to the tileBoard matrix and parents them to boardTransform.
-        /// Any duplicate tiles are deleted.
-        /// REQUIRES piece is completely within board -- no bits sticking out.
+        /// Will add the piece to the board, if possible. 
+        /// REQUIRES that the piece is contained within the board.
+        /// will return false if it is not able to place the piece (one or more tiles is occupied and/or is a hole)
         /// </summary>
         /// <param name="anchorPosition"></param>
         /// <param name="tileBoard"></param>
         /// <param name="boardTransform"></param>
-        public void AddTilesToBoard(Vector2Int anchorPosition, GameObject[,] tileBoard, Transform boardTransform)
+        public bool AddTilesToBoard(Vector2Int anchorPosition, GameObject[,] tileBoard, BoardController bc, Transform boardTransform)
         {
+            List<Vector2Int> coordsToPlace = new List<Vector2Int>();
+            List<GameObject> tilesToPlace = new List<GameObject>();
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
                 {
                     if (tiles[i, j] is not null)
                     {
-                        if (tileBoard[anchorPosition.x + i, anchorPosition.y + j] is not null)
+                        // We can't place the piece if at least one tile is obstructed.
+                        if (!tiles[i, j].GetComponent<TileController>().CanPlaceAt(anchorPosition.x + i, anchorPosition.y + j, tileBoard, bc))
                         {
-                            GameObject.Destroy(tileBoard[anchorPosition.x + i, anchorPosition.y + j]);
+                            return false;
                         }
-                        tileBoard[anchorPosition.x + i, anchorPosition.y + j] = tiles[i, j];
-                        tiles[i, j].transform.parent = boardTransform;
+                        tilesToPlace.Add(tiles[i, j]);
+                        coordsToPlace.Add(new Vector2Int(anchorPosition.x + i, anchorPosition.y + j));
                     }
                 }
             }
+            for(int i = 0; i < coordsToPlace.Count; i++)
+            {
+
+                tileBoard[coordsToPlace[i].x, coordsToPlace[i].y] = tilesToPlace[i];
+                tilesToPlace[i].transform.parent = boardTransform;
+                tilesToPlace[i].GetComponent<TileController>().Place();
+                // snap the tile z back onto the board
+                
+            }
+            return true;
         }
         // structure variables/attributes
         PieceSO p;

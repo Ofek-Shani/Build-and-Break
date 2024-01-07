@@ -1,10 +1,4 @@
-using JetBrains.Annotations;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Net.Security;
-using Unity.VisualScripting;
 using UnityEngine;
 using TMPro;
 
@@ -84,15 +78,23 @@ public class UIController : MonoBehaviour
         float scalingFactor = 1f / Mathf.Max(piece.width, piece.height);
         icon.transform.localScale = new Vector2(1f, 1f) * scalingFactor;
         // set the position of the picture
-        icon.transform.localPosition = Vector2.Scale(new Vector2(-1, 1), icon.transform.localScale);
+        Vector2 newPos = new Vector2(-1, 1) * scalingFactor;
+        //icon.transform.localPosition = Vector2.Scale(new Vector2(-1, 1), icon.transform.localScale);
         // even and odd height and width sizes need the piece to be scaled in different ways
-        if (piece.width % 2 == 0) icon.transform.localPosition = Vector2.Scale(icon.transform.localPosition, new Vector2(.5f, 1));
-        if (piece.height % 2 == 0) icon.transform.localPosition = Vector2.Scale(icon.transform.localPosition, new Vector2(1, .5f));
+        if (piece.width % 2 == 0) newPos = Vector2.Scale(newPos, new Vector2(.5f, 1));
+        if (piece.height % 2 == 0) newPos = Vector2.Scale(newPos, new Vector2(1, .5f));
+        // we need a special case for when piece width and height are 1
+        if (piece.width == 1) newPos = Vector2.Scale(newPos, new Vector2(0, 1));
+        if (piece.height == 1) newPos = Vector2.Scale(newPos, new Vector2(1, 0));
+        icon.transform.localPosition = newPos;
+        // now make the icon look correct by making it look like it was placed
+        foreach (Transform t in icon.transform) t.GetComponent<TileController>().Place();
         // Add everything to the correct list
         cards.Add(tempCard);
         cardControllers.Add(tempController);
         UpdateCardPositions();
         UpdateCardKeys();
+        
     }
 
     /// <summary>
