@@ -12,8 +12,8 @@ public class ManageGame : MonoBehaviour
 
     [SerializeField] int startingLevel = 1, numLevels = 8;
     int currentLevel;
-    List<PieceSO> pieces;
-    List<Piece.PieceStruct> pieceObjects;
+    List<PieceData> pieces;
+    List<Piece> pieceObjects;
     [SerializeField]
     GameObject tilePrefab;
 
@@ -29,7 +29,7 @@ public class ManageGame : MonoBehaviour
 
     // Game controller important variables
     GameObject controlledPiece = null;
-    Piece.PieceStruct piece;
+    Piece piece;
     Vector2 boardPosition = Vector2.zero;
     // how many  more pieces need to be broken before we can place the next piece.
     int toRemove = 0; // if 0, we are in place mode
@@ -84,22 +84,22 @@ public class ManageGame : MonoBehaviour
         // get the board ready...
         boardController.FillBoard(levelNumber, versionNumber);
         // now let's put together all of the pieces.
-        pieces = new List<PieceSO>(Resources.LoadAll<PieceSO>("Version " + versionNumber + "/Piece Scriptables/Level " + levelNumber));
-        pieceObjects = new List<Piece.PieceStruct>();
+        pieces = new List<PieceData>(Resources.LoadAll<PieceData>("Version " + versionNumber + "/Piece Scriptables/Level " + levelNumber));
+        pieceObjects = new List<Piece>();
         // tileObjects has the same dimensions as boardController.boardData
         tileObjects = new GameObject[boardController.boardWidth, boardController.boardHeight];
         int counter = 0;
         Vector3 spawnPoint = new Vector3(-10, 7, 0);
-        foreach (PieceSO p in pieces)
+        foreach (PieceData p in pieces)
         {
             GameObject toAdd = new GameObject("Piece " + (counter));
             toAdd.transform.position = spawnPoint;
             spawnPoint += new Vector3(0, -1 * (p.height + 1));
             // fill the gameobject with tiles!
-            Piece.PieceStruct pStruct;
+            Piece pStruct;
             try
             {
-                pStruct = new Piece.PieceStruct(p, ++counter, toAdd, tilePrefab);
+                pStruct = new Piece(p, ++counter, toAdd, tilePrefab);
                 pieceObjects.Add(pStruct);
                 // and let's take care of the UI while we're at it.
                 ui.AddCard(pStruct);
@@ -110,7 +110,7 @@ public class ManageGame : MonoBehaviour
             }
         }
         // make all of the actual pieces invisible so they don't clog the screen
-        foreach (Piece.PieceStruct p in pieceObjects) p.pieceObj.SetActive(false);
+        foreach (Piece p in pieceObjects) p.pieceObj.SetActive(false);
     }
 
     /// <summary>
@@ -179,7 +179,7 @@ public class ManageGame : MonoBehaviour
         int keynum = GetPressedNumber() - 1; // subtract 1 to make it more usable as an index for pieces
         if (keynum >= 0 && keynum < pieceObjects.Count && toRemove == 0)
         {
-            foreach (Piece.PieceStruct p in pieceObjects) p.pieceObj.SetActive(false);
+            foreach (Piece p in pieceObjects) p.pieceObj.SetActive(false);
             piece = pieceObjects[keynum];
             piece.pieceObj.SetActive(true);
             controlledPiece = piece.pieceObj;
@@ -281,7 +281,7 @@ public class ManageGame : MonoBehaviour
     /// <param name="i"></param>
     /// <param name="j"></param>
     /// <returns></returns>
-    bool PlacePieceAt(Piece.PieceStruct p, int i, int j)
+    bool PlacePieceAt(Piece p, int i, int j)
     {
         // try to place the piece and return false if it fails.
         if(!p.AddTilesToBoard(new Vector2Int(i, j), tileObjects, boardController, board.transform)) { return false; }

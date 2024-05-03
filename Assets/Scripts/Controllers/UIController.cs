@@ -66,7 +66,7 @@ public class UIController : MonoBehaviour
     /// (this includes a duplicate of the piece to be placed on the card)
     /// </summary>
     /// <param name="piece"></param>
-    public void AddCard(Piece.PieceStruct piece)
+    public void AddCard(Piece piece)
     {
         // Basic stuff
         GameObject tempCard = Instantiate(cardPrefab);

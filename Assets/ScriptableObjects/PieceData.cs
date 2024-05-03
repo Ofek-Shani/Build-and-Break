@@ -4,7 +4,12 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/PieceScriptableObject", order = 1)]
-public class PieceSO : ScriptableObject
+/// <summary>
+/// Scriptable Object used to store all the data needed by the Piece class to function.
+/// This file handles processing piece data when building the game. For information on 
+/// Piece class implementation, go to Piece.cs
+/// </summary>
+public class PieceData : ScriptableObject
 {
     public Texture2D texture; // sprite representing the tiles this piece contains
     public int cost;// how many pieces need to removed after this is placed?
@@ -15,6 +20,9 @@ public class PieceSO : ScriptableObject
 
     int versionNumber = 2;
 
+    /// <summary>
+    /// Sets the values of the piece
+    /// </summary>
     void SetValues()
     {
         if (name != "Remove Piece")

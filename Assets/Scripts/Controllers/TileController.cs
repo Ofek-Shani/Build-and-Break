@@ -5,6 +5,7 @@ using UnityEngine;
 
 /// <summary>
 /// Controller Implementation used by the tiles placed by the player.
+/// Note: This controls visual tiles, not the model implementation.
 /// DOES NOT apply to the background tiles!
 /// </summary>
 public class TileController : MonoBehaviour
@@ -15,14 +16,23 @@ public class TileController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        spr = GetComponentInChildren<SpriteRenderer>();
-        sprites = Resources.LoadAll<Sprite>("Textures/Tiles/Placement Tiles");
-        CheckForNullSprites();
-        // set initial state
-        SetSprite( TileStatus.Correct );
-        
+        InitializeSprites();
     }
 
+    /// <summary>
+    /// Loads the correct sprites and sets tile sprite to initial state
+    /// </summary>
+    void InitializeSprites()
+    {
+        // load sprites
+        sprites = Resources.LoadAll<Sprite>("Textures/Tiles/Placement Tiles");
+        spr = GetComponentInChildren<SpriteRenderer>();
+        CheckForNullSprites();
+        // set initial state
+        SetSprite(TileStatus.Correct);
+    }
+
+    ///
     void CheckForNullSprites()
     {
         int fails = 0;
