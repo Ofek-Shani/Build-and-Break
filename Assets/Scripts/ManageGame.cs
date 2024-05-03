@@ -99,7 +99,8 @@ public class ManageGame : MonoBehaviour
             Piece pStruct;
             try
             {
-                pStruct = new Piece(p, ++counter, toAdd, tilePrefab);
+                pStruct = toAdd.AddComponent<Piece>();
+                pStruct.Constructor(p, ++counter, tilePrefab);
                 pieceObjects.Add(pStruct);
                 // and let's take care of the UI while we're at it.
                 ui.AddCard(pStruct);
@@ -240,18 +241,7 @@ public class ManageGame : MonoBehaviour
         // handle piece placement -- set each tile object to be a child of the board, then delete the piece parent.
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            if (toRemove == 0)
-            {
-                toRemove = piece.cost;
-                if (PlacePieceAt(piece, (int)boardPosition.x, (int)(boardController.boardHeight - boardPosition.y - piece.height)))
-                {
-                    ToggleBreakMode(true);
-                    ui.SetPhaseText(toRemove);
-                    if (toRemove == 0) ToggleBreakMode(false);
-                }
-                else toRemove = 0;
-            }
-            else
+            if (toRemove >0) // aka if in break mode
             {
                 if (tileObjects[(int)boardPosition.x, (int)(boardController.boardHeight - boardPosition.y - 1)] is not null)
                 {
@@ -264,12 +254,21 @@ public class ManageGame : MonoBehaviour
                         ToggleBreakMode(false);
                         //Debug.Log("Tile erased. You can now place another piece.");
                     }
-                    else
-                    {
-                        //Debug.Log("Tile erased. You must remove " + toRemove + " more tiles before you can place again.");
-                    }
                     ui.SetPhaseText(toRemove);
                 }
+                
+            }
+            else if(controlledPiece is not null) // aka if we are in build mode and have a piece to place
+            {
+                toRemove = piece.cost;
+                // for some reason we need to place the pieces in normal x order but reverse y order -- just roll with it.
+                if (PlacePieceAt(piece, (int)boardPosition.x, (int)(boardController.boardHeight - boardPosition.y - piece.height)))
+                {
+                    ToggleBreakMode(true);
+                    ui.SetPhaseText(toRemove);
+                    if (toRemove == 0) ToggleBreakMode(false);
+                }
+                else toRemove = 0;
             }
         }
     }
@@ -318,6 +317,7 @@ public class ManageGame : MonoBehaviour
         }
         else
         {
+            controlledPiece = null;
             eraser.SetActive(false);
             ui.EnableCards();
         }

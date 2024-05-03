@@ -4,21 +4,21 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Piece : MonoBehaviour
+public class Piece: MonoBehaviour
 {
   
     // enable to make each tile indicate which piece it came from.
     bool showPieceNumbers = false;
 
     // struct constructor
-    public Piece(PieceData p_in, int id_in, GameObject pieceObj_in, GameObject tile)
+    public Piece Constructor(PieceData p_in, int id_in, GameObject tile)
     {
         p = p_in;
         width = p.width;
         height = p.height;
         id = id_in;
         cost = p.cost;
-        pieceObj = pieceObj_in;
+        pieceObj = gameObject;
         tiles = new GameObject[width, height];
 
         // Set up the GameObject
@@ -42,6 +42,8 @@ public class Piece : MonoBehaviour
                 }
             }
         }
+
+        return this;
     }
     /// <summary>
     /// EFFECTS updates the appearance of tiles within the piece to indicate if they
