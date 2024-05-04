@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class ManageGame : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class ManageGame : MonoBehaviour
     [SerializeField] int startingLevel = 1, numLevels = 8;
     int currentLevel;
     List<PieceData> pieces;
-    List<Piece> pieceObjects;
+    List<Piece> pieceComponents;
     [SerializeField]
     GameObject tilePrefab;
 
@@ -85,33 +86,32 @@ public class ManageGame : MonoBehaviour
         boardController.FillBoard(levelNumber, versionNumber);
         // now let's put together all of the pieces.
         pieces = new List<PieceData>(Resources.LoadAll<PieceData>("Version " + versionNumber + "/Piece Scriptables/Level " + levelNumber));
-        pieceObjects = new List<Piece>();
+        pieceComponents = new List<Piece>(); // list of all piece components attached to gameobjects
         // tileObjects has the same dimensions as boardController.boardData
         tileObjects = new GameObject[boardController.boardWidth, boardController.boardHeight];
         int counter = 0;
         Vector3 spawnPoint = new Vector3(-10, 7, 0);
-        foreach (PieceData p in pieces)
+        foreach (PieceData pData in pieces)
         {
             GameObject toAdd = new GameObject("Piece " + (counter));
             toAdd.transform.position = spawnPoint;
-            spawnPoint += new Vector3(0, -1 * (p.height + 1));
+            spawnPoint += new Vector3(0, -1 * (pData.height + 1));
             // fill the gameobject with tiles!
             Piece pStruct;
             try
             {
-                pStruct = toAdd.AddComponent<Piece>();
-                pStruct.Constructor(p, ++counter, tilePrefab);
-                pieceObjects.Add(pStruct);
+                pStruct = PieceFactory.MakePiece(pData, ++counter, toAdd, tilePrefab);
+                pieceComponents.Add(pStruct);
                 // and let's take care of the UI while we're at it.
                 ui.AddCard(pStruct);
             }
             catch (Exception e)
             {
-                Debug.LogError("ERR " + p.name + e);
+                Debug.LogError("ERR " + pData.name + e);
             }
         }
         // make all of the actual pieces invisible so they don't clog the screen
-        foreach (Piece p in pieceObjects) p.pieceObj.SetActive(false);
+        foreach (Piece p in pieceComponents) p.pieceObj.SetActive(false);
     }
 
     /// <summary>
@@ -170,7 +170,7 @@ public class ManageGame : MonoBehaviour
         HandleLevelManipInputs();
 
         // Win Detection
-        if (pieceObjects.Count == 0 && toRemove == 0)
+        if (pieceComponents.Count == 0 && toRemove == 0)
         {
             if (CheckForWin()) LoadNextLevel();
             else RestartLevel();
@@ -178,10 +178,10 @@ public class ManageGame : MonoBehaviour
 
         // Set which piece we are controlling
         int keynum = GetPressedNumber() - 1; // subtract 1 to make it more usable as an index for pieces
-        if (keynum >= 0 && keynum < pieceObjects.Count && toRemove == 0)
+        if (keynum >= 0 && keynum < pieceComponents.Count && toRemove == 0)
         {
-            foreach (Piece p in pieceObjects) p.pieceObj.SetActive(false);
-            piece = pieceObjects[keynum];
+            foreach (Piece p in pieceComponents) p.pieceObj.SetActive(false);
+            piece = pieceComponents[keynum];
             piece.pieceObj.SetActive(true);
             controlledPiece = piece.pieceObj;
             ui.MoveCardOut(keynum);
@@ -210,7 +210,7 @@ public class ManageGame : MonoBehaviour
         if (controlledPiece is null) return;
         if (controlledPiece != eraser)
         {
-            pieceObjects.Remove(piece);
+            pieceComponents.Remove(piece);
             GameObject toDestroy = controlledPiece;
             Destroy(toDestroy);
         }
@@ -246,7 +246,7 @@ public class ManageGame : MonoBehaviour
                 if (tileObjects[(int)boardPosition.x, (int)(boardController.boardHeight - boardPosition.y - 1)] is not null)
                 {
                     // Erase the tile at the given position
-                    EraseAt((int)boardPosition.x, (int)(boardController.boardHeight - boardPosition.y - 1));
+                    Break((int)boardPosition.x, (int)(boardController.boardHeight - boardPosition.y - 1));
                     // decrement toRemove and check to see if we can switch back to Build Phase
                     toRemove--;
                     if (toRemove == 0)
@@ -285,8 +285,8 @@ public class ManageGame : MonoBehaviour
         // try to place the piece and return false if it fails.
         if(!p.AddTilesToBoard(new Vector2Int(i, j), tileObjects, boardController, board.transform)) { return false; }
         // destroy the piece's card and gray remaining cards out (we are about to enter Break Phase)
-        ui.RemoveCard(pieceObjects.IndexOf(p)); // we can use this because index i in pieceObjects, pieces, and UIControllers card lists all correspond to components of the same piece
-        pieceObjects.Remove(p);
+        ui.RemoveCard(pieceComponents.IndexOf(p)); // we can use this because index i in pieceObjects, pieces, and UIControllers card lists all correspond to components of the same piece
+        pieceComponents.Remove(p);
         Destroy(controlledPiece);
         return true;
     }
@@ -296,11 +296,11 @@ public class ManageGame : MonoBehaviour
     /// </summary>
     /// <param name="i"></param>
     /// <param name="j"></param>
-    void EraseAt(int i, int j)
+    bool Break(int i, int j)
     {
         GameObject toErase = tileObjects[i, j];
-        tileObjects[i, j] = null;
-        Destroy(toErase);
+        if (toErase is null) return false;
+        else return toErase.GetComponent<Tile>().Break(tileObjects, i, j);
     }
 
     /// <summary>

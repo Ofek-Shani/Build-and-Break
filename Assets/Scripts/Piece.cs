@@ -6,45 +6,19 @@ using UnityEngine;
 
 public class Piece: MonoBehaviour
 {
-  
+
+    // structure variables/attributes
+    public GameObject[,] tiles;
+    public GameObject pieceObj;
+    public int width, height;
+    public int id, cost;
+
+
     // enable to make each tile indicate which piece it came from.
     bool showPieceNumbers = false;
 
     // struct constructor
-    public Piece Constructor(PieceData p_in, int id_in, GameObject tile)
-    {
-        p = p_in;
-        width = p.width;
-        height = p.height;
-        id = id_in;
-        cost = p.cost;
-        pieceObj = gameObject;
-        tiles = new GameObject[width, height];
-
-        // Set up the GameObject
-        BoxCollider2D coll = pieceObj.AddComponent<BoxCollider2D>();
-        coll.offset = new Vector2(width / 2, -height / 2);
-        coll.offset += new Vector2((width % 2 == 0) ? -.5f : 0, (height % 2 == 0) ? .5f : 0);
-        coll.size = new Vector2(width, height);
-        // fill it up with tiles
-        //Debug.Log(p.level.ToString() + p.name + " ISNULL " + (p is null) + " DATA IS NULL " + (p.data is null));
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height; j++)
-            {
-                if (p.data[i, j])
-                {
-                    Vector3 pos = new Vector3(i, j - (p.height - 1), 0);
-                    GameObject temp = Instantiate(tile, pieceObj.transform, false);
-                    temp.transform.localPosition = pos;
-                    if(showPieceNumbers) temp.GetComponentInChildren<TextMeshPro>().text = id_in.ToString();
-                    tiles[i, j] = temp;
-                }
-            }
-        }
-
-        return this;
-    }
+    
     /// <summary>
     /// EFFECTS updates the appearance of tiles within the piece to indicate if they
     /// are placed in the correct spot.
@@ -107,11 +81,6 @@ public class Piece: MonoBehaviour
         }
         return true;
     }
-    // structure variables/attributes
-    PieceData p;
-    GameObject[,] tiles;
-    public GameObject pieceObj;
-    public int width, height;
-    public int id, cost;
+    
     
 }

@@ -12,6 +12,11 @@ public class TileController : MonoBehaviour
 {
     public enum TileStatus { Unplaceable, Correct, Incorrect}
     SpriteRenderer spr;
+
+    // changed in the inspector -- determines type of visual to use for the tile.
+    // Options are "Basic", "Unbreakable"
+    [SerializeField] string tileVisualType; 
+
     Sprite[] sprites; // used by the enum and SetSprite to set sprites
     // Start is called before the first frame update
     void Awake()
@@ -25,14 +30,13 @@ public class TileController : MonoBehaviour
     void InitializeSprites()
     {
         // load sprites
-        sprites = Resources.LoadAll<Sprite>("Textures/Tiles/Placement Tiles");
+        sprites = Resources.LoadAll<Sprite>("Textures/Tiles/" + tileVisualType + " Tiles");
         spr = GetComponentInChildren<SpriteRenderer>();
         CheckForNullSprites();
         // set initial state
         SetSprite(TileStatus.Correct);
     }
 
-    ///
     void CheckForNullSprites()
     {
         int fails = 0;
