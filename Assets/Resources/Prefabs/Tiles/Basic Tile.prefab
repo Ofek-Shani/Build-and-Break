@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 1897306920, guid: 5f56d7bb2d6159c43b814d248aacf74d, type: 3}
+  m_Sprite: {fileID: -285191172, guid: bc60ffdb7946cab4ea6abd9faff14f4d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.6392157}
   m_FlipX: 0
   m_FlipY: 0
@@ -81,7 +81,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &5274023919092143049
@@ -267,7 +267,6 @@ GameObject:
   - component: {fileID: 5274023919461612811}
   - component: {fileID: 5274023919461612809}
   - component: {fileID: 5274023919461612808}
-  - component: {fileID: -3023941821026681533}
   m_Layer: 0
   m_Name: Basic Tile
   m_TagString: Untagged
@@ -301,7 +300,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5274023919461612815}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 017265ac1a2b2054bb2fa011c0d1bf67, type: 3}
+  m_Script: {fileID: 11500000, guid: 96063e3d6c79a454c9d037e905a57e6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tileVisualType: Basic
@@ -347,15 +346,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &-3023941821026681533
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5274023919461612815}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 749499151c5a38b4898e8f5baa06c98f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

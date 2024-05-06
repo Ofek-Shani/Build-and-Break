@@ -864,10 +864,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 961370880}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ab3362ab5cd846458e7b5e43b7cdaf1, type: 3}
+  m_Script: {fileID: 11500000, guid: f858604ab792b6f40b94ce213a6aa0fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 4648226015196673074, guid: ca5e0ced5dcd25a439070e220faaee74, type: 3}
+  holeTilePrefab: {fileID: 5274023919461612815, guid: 60d0c64eeaac9e44eacb541f06c10471, type: 3}
 --- !u!114 &961370883
 MonoBehaviour:
   m_ObjectHideFlags: 0

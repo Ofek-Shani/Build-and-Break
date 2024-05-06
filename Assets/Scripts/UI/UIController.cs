@@ -11,7 +11,7 @@ public class UIController : MonoBehaviour
     [SerializeField]
     float cardLength, cardHeight, padding;
     List<GameObject> cards;
-    List<CardController> cardControllers;
+    List<PieceCard> cardControllers;
 
     // Phase text-related variables
     GameObject phaseTextObj, phaseSubtextObj;
@@ -21,7 +21,7 @@ public class UIController : MonoBehaviour
     {
         // Cards
         cards = new List<GameObject>();
-        cardControllers = new List<CardController>();
+        cardControllers = new List<PieceCard>();
         // Phase Text
         phaseTextObj = GameObject.FindGameObjectWithTag("Phase Text");
         phaseSubtextObj = GameObject.FindGameObjectWithTag("Phase Subtext");
@@ -70,7 +70,7 @@ public class UIController : MonoBehaviour
     {
         // Basic stuff
         GameObject tempCard = Instantiate(cardPrefab);
-        CardController tempController = tempCard.GetComponent<CardController>();
+        PieceCard tempController = tempCard.GetComponent<PieceCard>();
         tempController.SetCostText(piece.cost.ToString());
         // now add the card picture
         GameObject icon = Instantiate(piece.pieceObj, tempController.anchorObject.transform);
@@ -88,7 +88,7 @@ public class UIController : MonoBehaviour
         if (piece.height == 1) newPos = Vector2.Scale(newPos, new Vector2(1, 0));
         icon.transform.localPosition = newPos;
         // now make the icon look correct by making it look like it was placed
-        foreach (Transform t in icon.transform) t.GetComponent<TileController>().Place();
+        foreach (Transform t in icon.transform) t.GetComponent<Tile>().PlaceVisually();
         // Add everything to the correct list
         cards.Add(tempCard);
         cardControllers.Add(tempController);
@@ -155,7 +155,7 @@ public class UIController : MonoBehaviour
     /// </summary>
     public void MoveAllCardsIn()
     {
-        foreach(CardController c in cardControllers)
+        foreach(PieceCard c in cardControllers)
         {
             c.MoveIn();
         }
@@ -176,7 +176,7 @@ public class UIController : MonoBehaviour
 
     public void DisableCards()
     {
-        foreach (CardController c in cardControllers)
+        foreach (PieceCard c in cardControllers)
         {
             c.SetGrayOut(true);
         }
@@ -184,7 +184,7 @@ public class UIController : MonoBehaviour
 
     public void EnableCards()
     {
-        foreach (CardController c in cardControllers)
+        foreach (PieceCard c in cardControllers)
         {
             c.SetGrayOut(false);
         }

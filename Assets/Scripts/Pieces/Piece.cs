@@ -27,7 +27,7 @@ public class Piece: MonoBehaviour
     /// </summary>
     /// <param name="anchorPosition"></param>
     /// <param name="board"></param>
-    public void UpdateTiles(Vector2Int anchorPosition, GameObject[,] tileBoard, BoardController bc)
+    public void UpdateTiles(Vector2Int anchorPosition, GameObject[,] tileBoard, GameBoard board)
     {
         for (int i = 0; i < width; i++)
         {
@@ -35,8 +35,8 @@ public class Piece: MonoBehaviour
             {
                 if (tiles[i, j])
                 {
-                    TileController tc = tiles[i, j].GetComponent<TileController>();
-                    tc.SetSprite(tc.GetStatus(anchorPosition.x + i, anchorPosition.y + j, tileBoard, bc));
+                    Tile tc = tiles[i, j].GetComponent<Tile>();
+                    tc.SetSprite(tc.GetStatus(anchorPosition.x + i, anchorPosition.y + j, board));
                 }
             }
         }
@@ -50,7 +50,7 @@ public class Piece: MonoBehaviour
     /// <param name="anchorPosition"></param>
     /// <param name="tileBoard"></param>
     /// <param name="boardTransform"></param>
-    public bool AddTilesToBoard(Vector2Int anchorPosition, GameObject[,] tileBoard, BoardController bc, Transform boardTransform)
+    public bool AddTilesToBoard(Vector2Int anchorPosition, GameObject[,] tileBoard, GameBoard board, Transform boardTransform)
     {
         List<Vector2Int> coordsToPlace = new List<Vector2Int>();
         List<GameObject> tilesToPlace = new List<GameObject>();
@@ -61,7 +61,7 @@ public class Piece: MonoBehaviour
                 if (tiles[i, j] is not null)
                 {
                     // We can't place the piece if at least one tile is obstructed.
-                    if (!tiles[i, j].GetComponent<TileController>().CanPlaceAt(anchorPosition.x + i, anchorPosition.y + j, tileBoard, bc))
+                    if (!tiles[i, j].GetComponent<Tile>().CanPlaceAt(anchorPosition.x + i, anchorPosition.y + j, board))
                     {
                         return false;
                     }
@@ -73,9 +73,8 @@ public class Piece: MonoBehaviour
         for(int i = 0; i < coordsToPlace.Count; i++)
         {
 
-            tileBoard[coordsToPlace[i].x, coordsToPlace[i].y] = tilesToPlace[i];
             tilesToPlace[i].transform.parent = boardTransform;
-            tilesToPlace[i].GetComponent<TileController>().Place();
+            board.PlaceAt(tilesToPlace[i], coordsToPlace[i].x, coordsToPlace[i].y);
             // snap the tile z back onto the board
                 
         }

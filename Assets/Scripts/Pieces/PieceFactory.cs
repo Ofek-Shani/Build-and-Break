@@ -9,6 +9,14 @@ public class PieceFactory : MonoBehaviour
     GameObject normalTile, unbreakableTile;
 
 
+    /// <summary>
+    /// Creates a piece component with all necessary values given the inputted PieceData
+    /// </summary>
+    /// <param name="p_in"></param>
+    /// <param name="id_in"></param>
+    /// <param name="pieceObj_in"></param>
+    /// <param name="tile"></param>
+    /// <returns></returns>
     public static Piece MakePiece(PieceData p_in, int id_in, GameObject pieceObj_in, GameObject tile)
     {
         // then create the piece

@@ -18,19 +18,15 @@ public class ManageGame : MonoBehaviour
     [SerializeField]
     GameObject tilePrefab;
 
-    // 2d array of all placed tiles. Pieces that have not had their placements confirmed
-    // are not part of this array.
-    GameObject[,] tileObjects;
-
-    BoardController boardController;
-    GameObject board;
+    GameBoard board;
+    GameObject boardObj;
     GameObject eraser;
 
     UIController ui;
 
     // Game controller important variables
     GameObject controlledPiece = null;
-    Piece piece;
+    Piece activePiece;
     Vector2 boardPosition = Vector2.zero;
     // how many  more pieces need to be broken before we can place the next piece.
     int toRemove = 0; // if 0, we are in place mode
@@ -48,8 +44,8 @@ public class ManageGame : MonoBehaviour
 
     private void Awake()
     { 
-        boardController = GetComponent<BoardController>();
-        board = GameObject.FindGameObjectWithTag("Board");
+        board = GetComponent<GameBoard>();
+        boardObj = GameObject.FindGameObjectWithTag("Board");
         eraser = GameObject.FindGameObjectWithTag("Eraser");
         ui = GetComponent<UIController>();
         currentLevel = startingLevel;
@@ -62,10 +58,10 @@ public class ManageGame : MonoBehaviour
         LoadLevel(startingLevel);
     }
 
-    void ClearPlacedTiles()
+    void DestroyAllPieces()
     {
-        if (tileObjects is null) return;
-        foreach (GameObject g in tileObjects) if (g is not null) Destroy(g);
+        if (pieceComponents is null) return;
+        foreach (Piece p in pieceComponents) Destroy(p.pieceObj);
     }
 
     void LoadLevel(int levelNumber)
@@ -73,9 +69,9 @@ public class ManageGame : MonoBehaviour
         Debug.Log("Loading Level " + levelNumber);
         // first, let's clear everything up
         ui.RemoveAllCards();
-        boardController.ClearBoard();
-        ClearPlacedTiles();
+        board.ClearBoard();
         ClearActivePiece();
+        DestroyAllPieces();
         // make sure that we snap back to place mode
         ToggleBreakMode(false);
         toRemove = 0;
@@ -83,12 +79,12 @@ public class ManageGame : MonoBehaviour
 
         // Now let's prep the new level.
         // get the board ready...
-        boardController.FillBoard(levelNumber, versionNumber);
+        board.FillBoard(levelNumber, versionNumber);
         // now let's put together all of the pieces.
         pieces = new List<PieceData>(Resources.LoadAll<PieceData>("Version " + versionNumber + "/Piece Scriptables/Level " + levelNumber));
         pieceComponents = new List<Piece>(); // list of all piece components attached to gameobjects
-        // tileObjects has the same dimensions as boardController.boardData
-        tileObjects = new GameObject[boardController.boardWidth, boardController.boardHeight];
+
+        
         int counter = 0;
         Vector3 spawnPoint = new Vector3(-10, 7, 0);
         foreach (PieceData pData in pieces)
@@ -181,9 +177,9 @@ public class ManageGame : MonoBehaviour
         if (keynum >= 0 && keynum < pieceComponents.Count && toRemove == 0)
         {
             foreach (Piece p in pieceComponents) p.pieceObj.SetActive(false);
-            piece = pieceComponents[keynum];
-            piece.pieceObj.SetActive(true);
-            controlledPiece = piece.pieceObj;
+            activePiece = pieceComponents[keynum];
+            activePiece.pieceObj.SetActive(true);
+            controlledPiece = activePiece.pieceObj;
             ui.MoveCardOut(keynum);
         }
         if (controlledPiece is not null) ControlPiece();
@@ -191,11 +187,11 @@ public class ManageGame : MonoBehaviour
 
     bool CheckForWin()
     {
-        for(int i = 0; i < boardController.boardWidth; i++)
+        for(int i = 0; i < board.boardWidth; i++)
         {
-            for(int j = 0; j < boardController.boardHeight; j++)
+            for(int j = 0; j < board.boardHeight; j++)
             {
-                if (boardController.goalData[i, j] != (tileObjects[i, j] is not null)) return false;
+                if (board.goalData[i, j] != (board.data[i, j] is not null)) return false;
             }
         }
         return true;
@@ -210,7 +206,7 @@ public class ManageGame : MonoBehaviour
         if (controlledPiece is null) return;
         if (controlledPiece != eraser)
         {
-            pieceComponents.Remove(piece);
+            pieceComponents.Remove(activePiece);
             GameObject toDestroy = controlledPiece;
             Destroy(toDestroy);
         }
@@ -230,39 +226,42 @@ public class ManageGame : MonoBehaviour
         // clamp board position so that the piece never goes off of the board.
         // Handle Cursor Movement
         if (controlledPiece == eraser) HandleCursorMovement(1, 1);
-        else HandleCursorMovement(piece.width, piece.height);
+        else HandleCursorMovement(activePiece.width, activePiece.height);
         controlledPiece.transform.position = (Vector3)Vector2.Scale(boardPosition, new Vector2(1, -1))
-            + new Vector3(-boardController.boardWidth / 2, boardController.boardHeight / 2, -.5f); //-.5f so that the piece is closer to camera
+            + new Vector3(-board.boardWidth / 2, board.boardHeight / 2, -.5f); //-.5f so that the piece is closer to camera
         // update each tile in the piece to reflect if it is placed in the correct spot.
         if (controlledPiece != eraser)
         {
-            piece.UpdateTiles(Vector2Int.RoundToInt(new Vector2(boardPosition.x, boardController.boardHeight - boardPosition.y - piece.height)), tileObjects, boardController);
+            //Debug.Log((board is not null) + " " + (board.data is not null));
+            activePiece.UpdateTiles(Vector2Int.RoundToInt(new Vector2(boardPosition.x, board.boardHeight - boardPosition.y - activePiece.height)), board.data, board);
         }
         // handle piece placement -- set each tile object to be a child of the board, then delete the piece parent.
         if (Input.GetKeyDown(KeyCode.Return))
         {
             if (toRemove >0) // aka if in break mode
             {
-                if (tileObjects[(int)boardPosition.x, (int)(boardController.boardHeight - boardPosition.y - 1)] is not null)
+                if (board.data[(int)boardPosition.x, (int)(board.boardHeight - boardPosition.y - 1)] is not null)
                 {
-                    // Erase the tile at the given position
-                    Break((int)boardPosition.x, (int)(boardController.boardHeight - boardPosition.y - 1));
-                    // decrement toRemove and check to see if we can switch back to Build Phase
-                    toRemove--;
-                    if (toRemove == 0)
+                    // Attempt to erase the tile at the given position
+                    if (board.RemoveAt((int)boardPosition.x, (int)(board.boardHeight - boardPosition.y - 1)))
                     {
-                        ToggleBreakMode(false);
-                        //Debug.Log("Tile erased. You can now place another piece.");
+                        // decrement toRemove and check to see if we can switch back to Build Phase
+                        toRemove--;
+                        if (toRemove == 0)
+                        {
+                            ToggleBreakMode(false);
+                            //Debug.Log("Tile erased. You can now place another piece.");
+                        }
+                        ui.SetPhaseText(toRemove);
                     }
-                    ui.SetPhaseText(toRemove);
                 }
                 
             }
-            else if(controlledPiece is not null) // aka if we are in build mode and have a piece to place
+            else if(controlledPiece != null) // aka if we are in build mode and have a piece to place
             {
-                toRemove = piece.cost;
+                toRemove = activePiece.cost;
                 // for some reason we need to place the pieces in normal x order but reverse y order -- just roll with it.
-                if (PlacePieceAt(piece, (int)boardPosition.x, (int)(boardController.boardHeight - boardPosition.y - piece.height)))
+                if (PlacePieceAt(activePiece, (int)boardPosition.x, (int)(board.boardHeight - boardPosition.y - activePiece.height)))
                 {
                     ToggleBreakMode(true);
                     ui.SetPhaseText(toRemove);
@@ -283,24 +282,12 @@ public class ManageGame : MonoBehaviour
     bool PlacePieceAt(Piece p, int i, int j)
     {
         // try to place the piece and return false if it fails.
-        if(!p.AddTilesToBoard(new Vector2Int(i, j), tileObjects, boardController, board.transform)) { return false; }
+        if(!p.AddTilesToBoard(new Vector2Int(i, j), board.data, board, boardObj.transform)) { return false; }
         // destroy the piece's card and gray remaining cards out (we are about to enter Break Phase)
         ui.RemoveCard(pieceComponents.IndexOf(p)); // we can use this because index i in pieceObjects, pieces, and UIControllers card lists all correspond to components of the same piece
         pieceComponents.Remove(p);
         Destroy(controlledPiece);
         return true;
-    }
-
-    /// <summary>
-    /// Erases a tile at the given board index
-    /// </summary>
-    /// <param name="i"></param>
-    /// <param name="j"></param>
-    bool Break(int i, int j)
-    {
-        GameObject toErase = tileObjects[i, j];
-        if (toErase is null) return false;
-        else return toErase.GetComponent<Tile>().Break(tileObjects, i, j);
     }
 
     /// <summary>
@@ -330,7 +317,7 @@ public class ManageGame : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftArrow)) boardPosition += Vector2.left;
         if (Input.GetKeyDown(KeyCode.RightArrow)) boardPosition += Vector2.right;
 
-        boardPosition = new Vector2(Mathf.Clamp(boardPosition.x, 0, boardController.boardWidth - pieceWidth),
-            Mathf.Clamp(boardPosition.y, 0, boardController.boardHeight - pieceHeight));
+        boardPosition = new Vector2(Mathf.Clamp(boardPosition.x, 0, board.boardWidth - pieceWidth),
+            Mathf.Clamp(boardPosition.y, 0, board.boardHeight - pieceHeight));
     }
 }
