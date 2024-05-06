@@ -191,7 +191,9 @@ public class ManageGame : MonoBehaviour
         {
             for(int j = 0; j < board.boardHeight; j++)
             {
-                if (board.goalData[i, j] != (board.data[i, j] is not null)) return false;
+                if (board.goalData[i, j] != (board.data[i, j] is not null)) {
+                    if(!board.data[i, j].GetComponent<Tile>().GetIgnoreDuringWinCheck()) return false;
+                }
             }
         }
         return true;
@@ -310,6 +312,11 @@ public class ManageGame : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// takes in keyboard input and moves the cursor accordingly
+    /// </summary>
+    /// <param name="pieceWidth"></param>
+    /// <param name="pieceHeight"></param>
     void HandleCursorMovement(int pieceWidth, int pieceHeight)
     {
         if (Input.GetKeyDown(KeyCode.UpArrow)) boardPosition += Vector2.down;

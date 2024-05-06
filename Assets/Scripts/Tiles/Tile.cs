@@ -10,12 +10,19 @@ using UnityEngine;
 /// </summary>
 public class Tile : MonoBehaviour
 {
-    public enum TileStatus { Unplaceable, Correct, Incorrect}
-    SpriteRenderer spr;
 
     // changed in the inspector -- determines type of visual to use for the tile.
     // Options are "Basic", "Unbreakable", "Hole"
-    [SerializeField] string tileVisualType = "Basic"; 
+    [SerializeField] string tileVisualType = "Basic";
+    /// <summary>
+    /// Should this tile be ignored by the game manager when checking for a win?
+    /// </summary>
+    [SerializeField] bool ignoreDuringWinCheck = false;
+
+    public bool GetIgnoreDuringWinCheck() { return ignoreDuringWinCheck; }
+
+public enum TileStatus { Unplaceable, Correct, Incorrect}
+    SpriteRenderer spr;
 
     Sprite[] sprites; // used by the enum and SetSprite to set sprites
     // Start is called before the first frame update

@@ -304,6 +304,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileVisualType: Basic
+  ignoreDuringWinCheck: 0
 --- !u!23 &5274023919461612808
 MeshRenderer:
   m_ObjectHideFlags: 0

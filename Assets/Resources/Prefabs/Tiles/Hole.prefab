@@ -346,3 +346,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileVisualType: Hole
+  ignoreDuringWinCheck: 1
