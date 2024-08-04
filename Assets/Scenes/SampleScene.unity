@@ -210,7 +210,7 @@ GameObject:
   - component: {fileID: 272511543}
   - component: {fileID: 272511545}
   - component: {fileID: 272511544}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Remaining Break Text
   m_TagString: Phase Subtext
   m_Icon: {fileID: 0}
@@ -384,6 +384,7 @@ GameObject:
   - component: {fileID: 519420029}
   - component: {fileID: 519420030}
   - component: {fileID: 519420033}
+  - component: {fileID: 519420034}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -459,7 +460,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 7
+  orthographic size: 8.072917
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -499,6 +500,29 @@ Skybox:
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
   m_CustomSkybox: {fileID: 2100000, guid: e181c4a0ab61a6d49b7c848aa4f6a9f4, type: 2}
+--- !u!114 &519420034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c88f5cead0c0b2a4eb05b5900433f8d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ComponentVersion: 1
+  m_AssetsPPU: 16
+  m_RefResolutionX: 320
+  m_RefResolutionY: 180
+  m_CropFrame: 0
+  m_GridSnapping: 0
+  m_UpscaleRT: 0
+  m_PixelSnapping: 0
+  m_CropFrameX: 0
+  m_CropFrameY: 0
+  m_StretchFill: 0
 --- !u!1 &618518128
 GameObject:
   m_ObjectHideFlags: 0
@@ -510,7 +534,7 @@ GameObject:
   - component: {fileID: 618518131}
   - component: {fileID: 618518130}
   - component: {fileID: 618518129}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Phase Text
   m_TagString: Phase Text
   m_Icon: {fileID: 0}
@@ -868,7 +892,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 4648226015196673074, guid: ca5e0ced5dcd25a439070e220faaee74, type: 3}
-  holeTilePrefab: {fileID: 5274023919461612815, guid: 60d0c64eeaac9e44eacb541f06c10471, type: 3}
+  holeTilePrefab: {fileID: 1054936660280141205, guid: c9809ecb175e81f4c93b2aadb0d2e3c7, type: 3}
 --- !u!114 &961370883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1125,7 +1149,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1882910019}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Phase Information
   m_TagString: Untagged
   m_Icon: {fileID: 0}

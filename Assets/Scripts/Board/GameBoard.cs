@@ -1,9 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class GameBoard : MonoBehaviour
 {
+
+    const float BOARD_BG_BORDER_SIZE = 0.5f;
+    const float BOARD_BG_PADDING = 1 / 16;
+
     GameObject boardObj;
     GameObject border;
 
@@ -50,7 +55,6 @@ public class GameBoard : MonoBehaviour
     /// <returns></returns>
     public bool RemoveAt(int i, int j)
     {
-        GameObject toReturn = data[i, j];
         if(!data[i,j].GetComponent<Tile>().Break(i, j, this)) return false;
         data[i, j] = null;
         return true;
@@ -92,7 +96,9 @@ public class GameBoard : MonoBehaviour
         data = new GameObject[boardWidth, boardHeight];
 
         // set the size of the border to the dimensions of the board
-        border.GetComponent<SpriteRenderer>().size = new Vector2(boardWidth+.5f, boardHeight+.5f);
+        border.GetComponent<SpriteRenderer>().size = new Vector2(
+            boardWidth+BOARD_BG_PADDING*(boardWidth-1)+BOARD_BG_BORDER_SIZE, 
+            boardHeight+BOARD_BG_PADDING*(boardWidth-1)+BOARD_BG_BORDER_SIZE);
 
         for (int i = 0; i < boardWidth; i++)
         {
@@ -103,7 +109,7 @@ public class GameBoard : MonoBehaviour
                 goalData[i, j] = (pix == Color.black);
 
                 // if there is no hole here,Make the background tile asset
-                Vector3 pos = new Vector3(i - (boardWidth / 2), j - (boardHeight / 2), 0);
+                Vector3 pos = new Vector3(i - (boardWidth / 2) + BOARD_BG_PADDING*i, j - (boardHeight / 2)+j*BOARD_BG_PADDING, 0);
                 backgroundTiles[i, j] = Instantiate(tilePrefab, pos, Quaternion.identity, boardObj.transform);
                 SpriteRenderer spr = backgroundTiles[i, j].GetComponentInChildren<SpriteRenderer>();
                 spr.sprite = holeData[i,j] ? tiles[2]: ((goalData[i, j]) ? tiles[1] : tiles[0]);

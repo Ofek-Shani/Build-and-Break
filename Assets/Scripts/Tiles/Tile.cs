@@ -21,7 +21,7 @@ public class Tile : MonoBehaviour
 
     public bool GetIgnoreDuringWinCheck() { return ignoreDuringWinCheck; }
 
-public enum TileStatus { Unplaceable, Correct, Incorrect}
+    public enum TileStatus { Unplaceable, Correct, Incorrect}
     SpriteRenderer spr;
 
     Sprite[] sprites; // used by the enum and SetSprite to set sprites
@@ -40,7 +40,6 @@ public enum TileStatus { Unplaceable, Correct, Incorrect}
     {
         transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, 0);
         spr.color = Color.white; // turn off the transparency.
-
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &8060740990905837096
+--- !u!1001 &5157461060951005338
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,10 +10,10 @@ PrefabInstance:
     - target: {fileID: 5274023918880045651, guid: a7f05e5a64814564098c41fff32f921e, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 846781120, guid: 10774bdf04c964b4c87dcae68b9a3258, type: 3}
+      objectReference: {fileID: -322988546, guid: b4f1aafdd9a160d4e8bc4c2474933ab8, type: 3}
     - target: {fileID: 5274023919461612809, guid: a7f05e5a64814564098c41fff32f921e, type: 3}
       propertyPath: tileVisualType
-      value: Unbreakable
+      value: Hole
       objectReference: {fileID: 0}
     - target: {fileID: 5274023919461612811, guid: a7f05e5a64814564098c41fff32f921e, type: 3}
       propertyPath: m_RootOrder
@@ -61,27 +61,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5274023919461612815, guid: a7f05e5a64814564098c41fff32f921e, type: 3}
       propertyPath: m_Name
-      value: Unbreakable Tile
+      value: Hole Tile
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5274023919461612809, guid: a7f05e5a64814564098c41fff32f921e, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a7f05e5a64814564098c41fff32f921e, type: 3}
---- !u!1 &2804785953765546791 stripped
+--- !u!1 &1054936660280141205 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5274023919461612815, guid: a7f05e5a64814564098c41fff32f921e, type: 3}
-  m_PrefabInstance: {fileID: 8060740990905837096}
+  m_PrefabInstance: {fileID: 5157461060951005338}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7021709175585176795
+--- !u!114 &4255362558421323468
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2804785953765546791}
+  m_GameObject: {fileID: 1054936660280141205}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e0b2dcac27f746c47b8183f952fe4beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileVisualType: Unbreakable
-  ignoreDuringWinCheck: 0
+  tileVisualType: Hole
+  ignoreDuringWinCheck: 1
