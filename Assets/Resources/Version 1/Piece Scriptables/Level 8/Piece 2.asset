@@ -15,5 +15,6 @@ MonoBehaviour:
   texture: {fileID: 2800000, guid: 3f765ee6d8653c7408f7a6b2c96b2137, type: 3}
   cost: 2
   level: 8
+  versionNumber: 1
   width: 3
   height: 3

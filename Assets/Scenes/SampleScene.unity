@@ -453,14 +453,14 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0
-    width: 1
-    height: 1
+    y: 0.0017857143
+    width: 0.99999994
+    height: 0.99642855
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 8.072917
+  orthographic size: 6
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -507,7 +507,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c88f5cead0c0b2a4eb05b5900433f8d1, type: 3}
   m_Name: 
@@ -517,7 +517,7 @@ MonoBehaviour:
   m_RefResolutionX: 320
   m_RefResolutionY: 180
   m_CropFrame: 0
-  m_GridSnapping: 0
+  m_GridSnapping: 2
   m_UpscaleRT: 0
   m_PixelSnapping: 0
   m_CropFrameX: 0
@@ -857,6 +857,7 @@ GameObject:
   - component: {fileID: 961370882}
   - component: {fileID: 961370883}
   - component: {fileID: 961370884}
+  - component: {fileID: 961370885}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: GameController
@@ -924,6 +925,18 @@ MonoBehaviour:
   cardLength: 3
   cardHeight: 2
   padding: 0
+--- !u!114 &961370885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 961370880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2630242f81a2b74f9eb5ac721a1c786, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &978572265
 GameObject:
   m_ObjectHideFlags: 0

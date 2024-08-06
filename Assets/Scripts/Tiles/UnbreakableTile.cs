@@ -8,4 +8,8 @@ public class UnbreakableTile : Tile
     {
         return false;
     }
+    public override bool CanBreakAt(int i, int j)
+    {
+        return false;
+    }
 }

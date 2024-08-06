@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: Level 3
   m_EditorClassIdentifier: 
   levelNumber: 3
-  texture: {fileID: 2800000, guid: 55816add776b032478ad74a075e5c344, type: 3}
+  texture: {fileID: 2800000, guid: 455e194fdb94cc64ea2e321684b9c2db, type: 3}
+  versionNumber: 2

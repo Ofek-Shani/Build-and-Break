@@ -13,40 +13,48 @@ public class PieceData : ScriptableObject
 {
     public Texture2D texture; // sprite representing the tiles this piece contains
     public int cost;// how many pieces need to removed after this is placed?
-    public int level;
+    public int level, versionNumber;
     public bool[,] data; // which cells does this piece occupy?
     public int width, height;
     int pieceNumber; // used only for getting the text
 
-    int versionNumber = 2;
+    
 
     /// <summary>
     /// Sets the values of the piece
     /// </summary>
     void SetValues()
     {
+        string path;
+
         if (name != "Remove Piece")
         {
             pieceNumber = int.Parse(name.Split(" ")[1]);
-            texture = Resources.Load<Texture2D>("Version " + versionNumber + "/Puzzle Data/Pieces/Level " + level + "/Piece " + pieceNumber);
+            path = "Version " + versionNumber + "/Puzzle Data/Pieces/Level " + level + "/Piece " + pieceNumber;
+            texture = Resources.Load<Texture2D>(path);
         }
         else
         {
             pieceNumber = 0;
-            texture = Resources.Load<Texture2D>("Version " + versionNumber + "/Puzzle Data/Pieces/RemovePiece");
+            path = "Version " + versionNumber + "/Puzzle Data/Pieces/RemovePiece";
+            texture = Resources.Load<Texture2D>(path);
         }
+
+        if (texture == null) Debug.LogWarning(name + " tried to load texture " + path + " and failed.");
+
         width = texture.width;
         height = texture.height;
+        
         data = new bool[width, height];
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
-                data[i, j] = texture.GetPixel(i, j) == Color.black;
+                data[i, j] = texture.GetPixel(i, j) != Color.white;
             }
         }
     }
-    
+
     private void OnValidate()
     {
         SetValues();

@@ -46,28 +46,55 @@ public class GameBoard : MonoBehaviour
         foreach (GameObject g in data) if(g) g.GetComponent<Tile>().SuperBreak();
     }
 
+
     /// <summary>
-    /// Attempts to remove the tile at the given location. If the tile cannot be removed,
-    /// this returns false. Otherwise it returns true.
+    /// Attempts to break a tile at the given location.
     /// </summary>
     /// <param name="i"></param>
     /// <param name="j"></param>
-    /// <returns></returns>
-    public bool RemoveAt(int i, int j)
+    /// <returns>If the tile cannot be removed,
+    /// this returns false. Otherwise it returns true.</returns>
+    public bool BreakAt(int i, int j)
     {
+        // first, check to see if the tile in question is actually ON the board
+        if (i < 0 || j < 0 || i > boardWidth || j > boardHeight) return false;
+        // now we can actually do things
         if(!data[i,j].GetComponent<Tile>().Break(i, j, this)) return false;
         data[i, j] = null;
         return true;
     }
+   
+    /// <summary>
+    /// TODO: Make the tile visual update to match the movement
+    /// </summary>
+    /// <param name="i1"></param>
+    /// <param name="j1"></param>
+    /// <param name="i2"></param>
+    /// <param name="j2"></param>
+    /// <returns></returns>
+    public bool MoveTo(int i1, int j1, int i2, int j2)
+    {
+        if (!data[i2,j2] && !data[i1,j1].GetComponent<Tile>().IsMovable())
+        {
+            data[i2, j2] = data[i1, j1];
+            data[i1, j1] = null;
+            return true;
+        }
+        return false;
+    }
+
+    public bool CanBreakAt(int i, int j)
+    {
+        return data[i, j].GetComponent<Tile>().CanBreakAt(i, j);
+    }
 
     /// <summary>
     /// Attempts to place the given piece in the given space.
-    /// If unable to place the piece, returns false.
     /// </summary>
     /// <param name="toPlace"></param>
     /// <param name="i"></param>
     /// <param name="j"></param>
-    /// <returns></returns>
+    /// <returns>If unable to place the piece, returns false. Otherwise returns true.</returns>
     public bool PlaceAt(GameObject toPlace, int i, int j)
     {
         Tile t = toPlace.GetComponent<Tile>();
@@ -114,8 +141,6 @@ public class GameBoard : MonoBehaviour
                 SpriteRenderer spr = backgroundTiles[i, j].GetComponentInChildren<SpriteRenderer>();
                 spr.sprite = holeData[i,j] ? tiles[2]: ((goalData[i, j]) ? tiles[1] : tiles[0]);
                 // backgroundTiles[i, j].GetComponentInChildren<TileController>().SetCoords(i, j);
-
-
                 if (pix == Color.red) 
                 {
                     GameObject holeToPlace = Instantiate(holeTilePrefab, pos, Quaternion.identity, boardObj.transform);

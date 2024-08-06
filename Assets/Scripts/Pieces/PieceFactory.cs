@@ -6,8 +6,18 @@ using UnityEngine;
 public class PieceFactory : MonoBehaviour
 {
     [SerializeField]
-    GameObject normalTile, unbreakableTile;
+    static GameObject normalTile = Resources.Load<GameObject>("Prefabs/Tiles/Basic Tile");
+    static GameObject unbreakableTile = Resources.Load<GameObject>("Prefabs/Tiles/Unbreakable Tile");
+    static GameObject burstTile = Resources.Load<GameObject>("Prefabs/Tiles/Burst Tile");
+    static GameObject gustTile = Resources.Load<GameObject>("Prefabs/Tiles/Gust Tile");
 
+    static Dictionary<Color32, GameObject> pieceColors = new Dictionary<Color32, GameObject>()
+    {
+        {new Color32(0,0,0,255), normalTile}, // Normal
+        {new Color32(255,128,0,255), burstTile}, // Burst
+        {new Color32(128,128,255,255), gustTile}, // Gust
+        {new Color32(128,128,128,255), unbreakableTile} // Unbreakable
+    };
 
     /// <summary>
     /// Creates a piece component with all necessary values given the inputted PieceData
@@ -17,8 +27,9 @@ public class PieceFactory : MonoBehaviour
     /// <param name="pieceObj_in"></param>
     /// <param name="tile"></param>
     /// <returns></returns>
-    public static Piece MakePiece(PieceData p_in, int id_in, GameObject pieceObj_in, GameObject tile)
+    public static Piece MakePiece(PieceData p_in, int id_in, GameObject pieceObj_in)
     {
+
         // then create the piece
         Piece piece = pieceObj_in.AddComponent<Piece>();
         piece.width = p_in.width;
@@ -41,10 +52,14 @@ public class PieceFactory : MonoBehaviour
             {
                 if (p_in.data[i, j])
                 {
+                    // which tile are we making?
+                    GameObject tile = pieceColors[p_in.texture.GetPixel(i,j)];
+                    // where are we putting it?
                     Vector3 pos = new Vector3(i, j - (piece.height - 1), 0);
                     GameObject temp = Instantiate(tile, piece.pieceObj.transform, false);
                     temp.transform.localPosition = pos;
                     //if (showPieceNumbers) temp.GetComponentInChildren<TextMeshPro>().text = id_in.ToString();
+                    // hook it up to the piece
                     piece.tiles[i, j] = temp;
                 }
             }

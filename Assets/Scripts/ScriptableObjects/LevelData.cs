@@ -7,7 +7,7 @@ public class LevelData : ScriptableObject
 {
     public int levelNumber; // level number
     public Texture2D texture; // sprite representing the tiles this piece contains
-    int versionNumber = 2;
+    public int versionNumber;
 
     private void Awake()
     {

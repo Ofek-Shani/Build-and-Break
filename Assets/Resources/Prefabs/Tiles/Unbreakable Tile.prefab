@@ -85,3 +85,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileVisualType: Unbreakable
   ignoreDuringWinCheck: 0
+  sprites: []

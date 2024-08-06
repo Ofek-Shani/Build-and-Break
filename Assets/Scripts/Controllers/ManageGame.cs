@@ -7,8 +7,7 @@ using UnityEngine.UIElements;
 public class ManageGame : MonoBehaviour
 {
     // Use this to determine which sets of levels to draw from.
-    // needs to be changed in PieceSO.cs and Level.cs as well.
-    int versionNumber = 2;
+    int versionNumber = 3;
 
 
     [SerializeField] int startingLevel = 1, numLevels = 8;
@@ -23,6 +22,8 @@ public class ManageGame : MonoBehaviour
     GameObject eraser;
 
     UIController ui;
+
+    ActionQueue actionQueue;
 
     // Game controller important variables
     GameObject controlledPiece = null;
@@ -44,7 +45,8 @@ public class ManageGame : MonoBehaviour
 
     private void Awake()
     { 
-        board = GetComponent<GameBoard>();
+        board = gameObject.GetComponent<GameBoard>();
+        actionQueue = gameObject.GetComponent<ActionQueue>();
         boardObj = GameObject.FindGameObjectWithTag("Board");
         eraser = GameObject.FindGameObjectWithTag("Eraser");
         ui = GetComponent<UIController>();
@@ -96,7 +98,7 @@ public class ManageGame : MonoBehaviour
             Piece pStruct;
             try
             {
-                pStruct = PieceFactory.MakePiece(pData, ++counter, toAdd, tilePrefab);
+                pStruct = PieceFactory.MakePiece(pData, ++counter, toAdd);
                 pieceComponents.Add(pStruct);
                 // and let's take care of the UI while we're at it.
                 ui.AddCard(pStruct);
@@ -166,7 +168,7 @@ public class ManageGame : MonoBehaviour
         HandleLevelManipInputs();
 
         // Win Detection
-        if (pieceComponents.Count == 0 && toRemove == 0)
+        if (pieceComponents.Count == 0 && toRemove == 0 && actionQueue.AreQueuesClear())
         {
             if (CheckForWin()) LoadNextLevel();
             else RestartLevel();
@@ -245,8 +247,9 @@ public class ManageGame : MonoBehaviour
                 if (board.data[(int)boardPosition.x, (int)(board.boardHeight - boardPosition.y - 1)] is not null)
                 {
                     // Attempt to erase the tile at the given position
-                    if (board.RemoveAt((int)boardPosition.x, (int)(board.boardHeight - boardPosition.y - 1)))
+                    if (board.CanBreakAt((int)boardPosition.x, (int)(board.boardHeight - boardPosition.y - 1)))
                     {
+                        actionQueue.QueueAction(new QueuableBreak(new Vector2Int((int)boardPosition.x, (int)(board.boardHeight - boardPosition.y - 1)), gameObject));
                         // decrement toRemove and check to see if we can switch back to Build Phase
                         toRemove--;
                         if (toRemove == 0)

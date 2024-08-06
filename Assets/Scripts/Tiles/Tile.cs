@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public class Tile : MonoBehaviour
 {
 
     // changed in the inspector -- determines type of visual to use for the tile.
-    // Options are "Basic", "Unbreakable", "Hole"
+    // Options are "Basic", "Unbreakable", "Hole", "Burst", "Gust"
     [SerializeField] string tileVisualType = "Basic";
     /// <summary>
     /// Should this tile be ignored by the game manager when checking for a win?
@@ -24,7 +25,7 @@ public class Tile : MonoBehaviour
     public enum TileStatus { Unplaceable, Correct, Incorrect}
     SpriteRenderer spr;
 
-    Sprite[] sprites; // used by the enum and SetSprite to set sprites
+    [SerializeField] Sprite[] sprites; // used by the enum and SetSprite to set sprites
     // Start is called before the first frame update
     void Awake()
     {
@@ -56,6 +57,7 @@ public class Tile : MonoBehaviour
         return true;
     }
 
+
     /// <summary>
     /// Destroys the tile without modifying anything else or triggering Break effects.
     /// </summary>
@@ -72,6 +74,15 @@ public class Tile : MonoBehaviour
     public bool CanPlaceAt(int i, int j, GameBoard board)
     {
         return GetStatus(i, j, board) != TileStatus.Unplaceable;
+    }
+    public virtual bool CanBreakAt(int i, int j)
+    {
+        return true;
+    }
+
+    public virtual bool IsMovable()
+    {
+        return true;
     }
 
     /// <summary>
@@ -102,19 +113,24 @@ public class Tile : MonoBehaviour
         // load sprites
         sprites = Resources.LoadAll<Sprite>("Textures/Tiles/" + tileVisualType + " Tiles");
         spr = GetComponentInChildren<SpriteRenderer>();
-        CheckForNullSprites();
+        ValidateSprites();
         // set initial state
         SetSprite(TileStatus.Correct);
     }
 
-    void CheckForNullSprites()
+    void ValidateSprites()
     {
         int fails = 0;
         for (int i = 0; i < sprites.Length; i++)
         {
             if (sprites[i] is null) fails++;
         }
-        if (fails > 0) Debug.LogWarning("File Warning: " + fails + "/" + sprites.Length + " tile sprites failed to load.");
+        if (fails > 0) Debug.LogWarning("Tile Sprite Loading Warning: " + fails + "/" + sprites.Length + " tile sprites failed to load.");
+
+        if (sprites.Length < 3)
+        {
+            Debug.LogWarning(transform.gameObject.name + " Tile: Tile Sprite Loading Warning: Should have 3 sprites but only has " + sprites.Length + ".");
+        }
     }
 
     /// <summary>
@@ -128,6 +144,12 @@ public class Tile : MonoBehaviour
 
     public void SetSprite(TileStatus ts)
     {
+        ValidateSprites();
+        if ((int)ts > sprites.Length)
+        {
+            Debug.LogWarning("index too big (" + (int)ts + " > " + sprites.Length + ")");
+        }
+        else if ((int)ts < 0) Debug.LogWarning("<0");
         spr.sprite = sprites[(int)ts];
         //Debug.Log(spr.sprite.name + " " + gameObject.name);
     }
