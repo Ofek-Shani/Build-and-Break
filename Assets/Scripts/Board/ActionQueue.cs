@@ -41,10 +41,7 @@ public class ActionQueue : MonoBehaviour
             Debug.Log(CurrentQueueCount() + " " + NextQueueCount());
             foreach (QueuableBoardAction qAct in currentQueue)
             {
-                if (qAct.GetType() == typeof(QueuableBreak))
-                {
-                    board.BreakAt(qAct.coords.x, qAct.coords.y);
-                }
+                qAct.Act(board);
             }
         }
         currentQueue = nextQueue;

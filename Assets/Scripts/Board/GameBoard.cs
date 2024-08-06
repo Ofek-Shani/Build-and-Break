@@ -74,10 +74,11 @@ public class GameBoard : MonoBehaviour
     /// <returns></returns>
     public bool MoveTo(int i1, int j1, int i2, int j2)
     {
-        if (!data[i2,j2] && !data[i1,j1].GetComponent<Tile>().IsMovable())
+        if (!data[i2,j2] && data[i1,j1].GetComponent<Tile>().IsMovable())
         {
             data[i2, j2] = data[i1, j1];
             data[i1, j1] = null;
+            data[i2, j2].GetComponent<Tile>().MoveTo(BoardToWorldCoordinates(i2, j2), false);
             return true;
         }
         return false;
@@ -136,7 +137,7 @@ public class GameBoard : MonoBehaviour
                 goalData[i, j] = (pix == Color.black);
 
                 // if there is no hole here,Make the background tile asset
-                Vector3 pos = new Vector3(i - (boardWidth / 2) + BOARD_BG_PADDING*i, j - (boardHeight / 2)+j*BOARD_BG_PADDING, 0);
+                Vector3 pos = BoardToWorldCoordinates(i, j);
                 backgroundTiles[i, j] = Instantiate(tilePrefab, pos, Quaternion.identity, boardObj.transform);
                 SpriteRenderer spr = backgroundTiles[i, j].GetComponentInChildren<SpriteRenderer>();
                 spr.sprite = holeData[i,j] ? tiles[2]: ((goalData[i, j]) ? tiles[1] : tiles[0]);
@@ -148,5 +149,16 @@ public class GameBoard : MonoBehaviour
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Returns the world coordinates of a given tile on the board in Vector3 form (z=0).
+    /// </summary>
+    /// <param name="i"></param>
+    /// <param name="j"></param>
+    /// <returns></returns>
+    public Vector3 BoardToWorldCoordinates(int i, int j)
+    {
+        return new Vector3(i - (boardWidth / 2) + BOARD_BG_PADDING * i, j - (boardHeight / 2) + j * BOARD_BG_PADDING, 0);
     }
 }

@@ -16,7 +16,10 @@ public abstract class QueuableBoardAction
     // TODO: find a way to automatically populate this list with all derived types of this class.
     static List<Type> stackableTypes = new() { typeof(QueuableBreak) };
 
-    public virtual void Action() { }
+    /// <summary>
+    /// Does something to the game board (depends on subtype)
+    /// </summary>
+    public virtual void Act(GameBoard board) { }
 
     public QueuableBoardAction(Vector2Int newCoords, GameObject callerName)
     {
@@ -24,7 +27,6 @@ public abstract class QueuableBoardAction
         caller = callerName;
     }
 
-    public static List<QueuableBoardAction> Stack() { return null; }
 
     /// <summary>
     /// Checks to see if 2 actions affect the same space

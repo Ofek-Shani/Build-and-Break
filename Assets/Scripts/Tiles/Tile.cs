@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -30,6 +31,24 @@ public class Tile : MonoBehaviour
     void Awake()
     {
         InitializeSprites();
+        targetPos = transform.localPosition;
+    }
+
+    // POSITION HANDLING
+    Vector3 targetPos;
+    private void FixedUpdate()
+    {
+        //transform.localPosition = Vector3.Lerp(transform.localPosition, targetPos, 0.1f);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="newPos"></param> Position to move to
+    /// <param name="snapToPos"></param> // whether the movemnet should snap instead of lerp
+    public void MoveTo(Vector3 newPos, bool snapToPos)
+    {
+
     }
 
     // -- GAME LOGIC ---
