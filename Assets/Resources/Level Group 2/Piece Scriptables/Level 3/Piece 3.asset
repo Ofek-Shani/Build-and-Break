@@ -7,14 +7,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8227d45e6e340cb4caaaa8db1140d86b, type: 3}
   m_Name: Piece 3
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: b80bc46f4be67734a968b43a2d27fdba, type: 3}
-  cost: 3
+  texture: {fileID: 2800000, guid: cb5e5dc1b7c94b6499f78b578450b3a6, type: 3}
+  cost: 2
   level: 3
-  versionNumber: 2
+  versionNumber: 3
   width: 3
   height: 3
