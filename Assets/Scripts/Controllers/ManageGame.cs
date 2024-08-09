@@ -2,13 +2,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
 public class ManageGame : MonoBehaviour
 {
-    // Use this to determine which sets of levels to draw from.
-    int versionNumber = 3;
+    // CONFIGURABLE CONSTANTS
+    const float TIME_TO_WIN_CHECK = 1; // how long do we wait after the last move before we check for win?
 
+    // Use this to determine which sets of levels to draw from.
+    int levelGroupNumber = 3;
+
+    bool playingGame = true;
 
     [SerializeField] int startingLevel = 1, numLevels = 8;
     int currentLevel;
@@ -60,6 +65,47 @@ public class ManageGame : MonoBehaviour
         LoadLevel(startingLevel);
     }
 
+    // Update is called once per frame
+    void Update()
+    {
+        if (playingGame)
+        {
+            HandleLevelManipInputs();
+
+            StartCoroutine(WinCheck());
+
+            // Set which piece we are controlling
+            int keynum = GetPressedNumber() - 1; // subtract 1 to make it more usable as an index for pieces
+            if (keynum >= 0 && keynum < pieceComponents.Count && toRemove == 0)
+            {
+                foreach (Piece p in pieceComponents) p.pieceObj.SetActive(false);
+                activePiece = pieceComponents[keynum];
+                activePiece.pieceObj.SetActive(true);
+                controlledPiece = activePiece.pieceObj;
+                ui.MoveCardOut(keynum);
+            }
+            if (controlledPiece is not null) ControlPiece();
+        }
+    }
+
+    /// <summary>
+    /// Checks to see if play has finished, and if so figures out if the level was completed or failed.
+    /// It then loads a level accordingly (repeat level on fail, load next level on success)
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator WinCheck()
+    {
+        // Win Detection
+        if (pieceComponents.Count == 0 && toRemove == 0 && actionQueue.AreQueuesClear())
+        {
+            playingGame = false;
+            yield return new WaitForSeconds(TIME_TO_WIN_CHECK);
+            if (CheckForWin()) LoadNextLevel();
+            else RestartLevel();
+            playingGame = true;
+        }
+    }
+
     void DestroyAllPieces()
     {
         if (pieceComponents is null) return;
@@ -81,9 +127,9 @@ public class ManageGame : MonoBehaviour
 
         // Now let's prep the new level.
         // get the board ready...
-        board.FillBoard(levelNumber, versionNumber);
+        board.FillBoard(levelNumber, levelGroupNumber);
         // now let's put together all of the pieces.
-        pieces = new List<PieceData>(Resources.LoadAll<PieceData>("Version " + versionNumber + "/Piece Scriptables/Level " + levelNumber));
+        pieces = new List<PieceData>(Resources.LoadAll<PieceData>("Level Group " + levelGroupNumber + "/Piece Scriptables/Level " + levelNumber));
         pieceComponents = new List<Piece>(); // list of all piece components attached to gameobjects
 
         
@@ -162,40 +208,27 @@ public class ManageGame : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.R)) RestartLevel();
     }
-    // Update is called once per frame
-    void Update()
-    {
-        HandleLevelManipInputs();
 
-        // Win Detection
-        if (pieceComponents.Count == 0 && toRemove == 0 && actionQueue.AreQueuesClear())
-        {
-            if (CheckForWin()) LoadNextLevel();
-            else RestartLevel();
-        }
-
-        // Set which piece we are controlling
-        int keynum = GetPressedNumber() - 1; // subtract 1 to make it more usable as an index for pieces
-        if (keynum >= 0 && keynum < pieceComponents.Count && toRemove == 0)
-        {
-            foreach (Piece p in pieceComponents) p.pieceObj.SetActive(false);
-            activePiece = pieceComponents[keynum];
-            activePiece.pieceObj.SetActive(true);
-            controlledPiece = activePiece.pieceObj;
-            ui.MoveCardOut(keynum);
-        }
-        if (controlledPiece is not null) ControlPiece();
-    }
-
+    /// <summary>
+    /// Returns whether the current board state is in a "winning" configuration
+    /// (all goal spaces occupied and all non-goal spaces empty)
+    /// </summary>
+    /// <returns></returns>
     bool CheckForWin()
     {
         for(int i = 0; i < board.boardWidth; i++)
         {
             for(int j = 0; j < board.boardHeight; j++)
             {
-                if (board.goalData[i, j] != (board.data[i, j] is not null)) {
-                    if(!board.data[i, j].GetComponent<Tile>().GetIgnoreDuringWinCheck()) return false;
-                }
+                // if space should be unoccupied but is anyway, this is not a winning state.
+                if (!board.goalData[i, j] && board.data[i, j] && !board.data[i, j].GetComponent<Tile>().GetIgnoreDuringWinCheck()) return false;
+                // if space should be occupied but is not, this is not a winning state.
+                if (board.goalData[i, j] && !board.data[i, j]) return false;
+
+                // this is another way to implement the above, but it's tougher to read
+                //if (board.goalData[i, j] != (board.data[i, j] is not null)) {
+                //    if(!board.data[i,j] || !board.data[i, j].GetComponent<Tile>().GetIgnoreDuringWinCheck()) return false;
+                //}
             }
         }
         return true;

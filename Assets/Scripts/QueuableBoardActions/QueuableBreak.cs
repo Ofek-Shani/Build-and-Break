@@ -8,11 +8,17 @@ public class QueuableBreak : QueuableBoardAction
 {
     public QueuableBreak(Vector2Int newCoords, GameObject callerName) : base(newCoords, callerName)
     {
+        Debug.Log("Adding new QueuableBreak affecting tile " + newCoords.ToString());
     }
 
     public override void Act(GameBoard board)
     {
         board.BreakAt(coords.x, coords.y);
+    }
+
+    public override string ToString()
+    {
+        return "QueuableBreak with origin " + coords.ToString();
     }
 
     /// <summary>

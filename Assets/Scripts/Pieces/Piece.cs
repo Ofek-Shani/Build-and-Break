@@ -54,6 +54,7 @@ public class Piece: MonoBehaviour
     {
         List<Vector2Int> coordsToPlace = new List<Vector2Int>();
         List<GameObject> tilesToPlace = new List<GameObject>();
+        // get a list of all of the places we are dropping tiles at, and check to see if we can even drop to begin with
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
@@ -70,6 +71,7 @@ public class Piece: MonoBehaviour
                 }
             }
         }
+        // now we actually drop everything off
         for(int i = 0; i < coordsToPlace.Count; i++)
         {
 

@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using static TMPro.TMP_Compatibility;
 
 /// <summary>
 /// Controller Implementation used by the tiles placed by the player.
@@ -13,6 +14,10 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
 
+    [SerializeField] const float LERP_TIME = 0.75f;
+
+    Vector2Int boardPosition = new();
+
     // changed in the inspector -- determines type of visual to use for the tile.
     // Options are "Basic", "Unbreakable", "Hole", "Burst", "Gust"
     [SerializeField] string tileVisualType = "Basic";
@@ -21,24 +26,22 @@ public class Tile : MonoBehaviour
     /// </summary>
     [SerializeField] bool ignoreDuringWinCheck = false;
 
+    // Components
+    Animator anim;
+
     public bool GetIgnoreDuringWinCheck() { return ignoreDuringWinCheck; }
 
     public enum TileStatus { Unplaceable, Correct, Incorrect}
     SpriteRenderer spr;
+    TransformLerper lerper;
 
     [SerializeField] Sprite[] sprites; // used by the enum and SetSprite to set sprites
     // Start is called before the first frame update
     void Awake()
     {
         InitializeSprites();
-        targetPos = transform.localPosition;
-    }
-
-    // POSITION HANDLING
-    Vector3 targetPos;
-    private void FixedUpdate()
-    {
-        //transform.localPosition = Vector3.Lerp(transform.localPosition, targetPos, 0.1f);
+        lerper = GetComponent<TransformLerper>();
+        anim = GetComponent<Animator>();
     }
 
     /// <summary>
@@ -46,8 +49,31 @@ public class Tile : MonoBehaviour
     /// </summary>
     /// <param name="newPos"></param> Position to move to
     /// <param name="snapToPos"></param> // whether the movemnet should snap instead of lerp
-    public void MoveTo(Vector3 newPos, bool snapToPos)
+    /// <param name="isLocal"></param> whether or not the position is in local coordinates
+    public bool MoveTo(Vector3 newPos, bool snapToPos, bool isLocal)
     {
+        if (!IsMovable()) return false;
+        else {
+            if (snapToPos) lerper.SnapTo(newPos, isLocal);
+            else
+            {
+                lerper.LerpTo(newPos, isLocal, LERP_TIME);
+                anim.Play("Move");
+            }
+
+            return true;
+        }
+    }
+
+    public bool MoveToPositionOnBoard(int newI, int newJ, bool snapToPos, GameBoard board)
+    {
+        bool toReturn = MoveTo(board.BoardToWorldCoordinates(newI, newJ), snapToPos, true);
+        if (toReturn)
+        {
+            boardPosition = new Vector2Int(newI, newJ);
+            SetSprite(GetStatus(boardPosition.x, boardPosition.y, board));
+        }
+        return toReturn;
 
     }
 
@@ -58,8 +84,11 @@ public class Tile : MonoBehaviour
     /// </summary>
     public virtual void Place(int i, int j, GameBoard board)
     {
-        transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, 0);
+        //MoveToPositionOnBoard(i, j, true, board);
         spr.color = Color.white; // turn off the transparency.
+        // snap z to 0
+        transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, 0);
+        anim.Play("Place");
     }
 
     /// <summary>
@@ -72,10 +101,16 @@ public class Tile : MonoBehaviour
     /// <returns></returns>
     public virtual bool Break(int i, int j, GameBoard board)
     {
-        Destroy(gameObject);
+        StartCoroutine(RunBreakAnim());
         return true;
     }
 
+    IEnumerator RunBreakAnim()
+    {
+        anim.Play("Break");
+        yield return new WaitForSeconds(1);
+        Destroy(gameObject);
+    }
 
     /// <summary>
     /// Destroys the tile without modifying anything else or triggering Break effects.
@@ -112,7 +147,7 @@ public class Tile : MonoBehaviour
     /// <param name="board"></param>
     public TileStatus GetStatus(int i, int j, GameBoard board)
     {
-        if (board.data[i, j] != null)
+        if (board.data[i, j] != null && board.data[i, j] != gameObject) 
         {
             return TileStatus.Unplaceable;
         }
@@ -158,6 +193,7 @@ public class Tile : MonoBehaviour
     public void PlaceVisually()
     {
         transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, 0);
+        anim.Play("Idle-Placed");
         spr.color = Color.white; // turn off the transparency.
     }
 

@@ -1,13 +1,20 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+/// <summary>
+/// This class handles board state modification, as well as generation of the initial state and resetting the board.
+/// 
+/// Contains methods to Break, Move, and Place tiles, as well as initialize a level and clear the board.
+/// </summary>
 public class GameBoard : MonoBehaviour
 {
 
     const float BOARD_BG_BORDER_SIZE = 0.5f;
     const float BOARD_BG_PADDING = 1 / 16;
+    const int TILE_PHYSICS_LAYER = 3;
 
     GameObject boardObj;
     GameObject border;
@@ -59,7 +66,7 @@ public class GameBoard : MonoBehaviour
         // first, check to see if the tile in question is actually ON the board
         if (i < 0 || j < 0 || i > boardWidth || j > boardHeight) return false;
         // now we can actually do things
-        if(!data[i,j].GetComponent<Tile>().Break(i, j, this)) return false;
+        if(!data[i,j] || !data[i,j].GetComponent<Tile>().Break(i, j, this)) return false;
         data[i, j] = null;
         return true;
     }
@@ -74,16 +81,66 @@ public class GameBoard : MonoBehaviour
     /// <returns></returns>
     public bool MoveTo(int i1, int j1, int i2, int j2)
     {
-        if (!data[i2,j2] && data[i1,j1].GetComponent<Tile>().IsMovable())
-        {
-            data[i2, j2] = data[i1, j1];
-            data[i1, j1] = null;
-            data[i2, j2].GetComponent<Tile>().MoveTo(BoardToWorldCoordinates(i2, j2), false);
-            return true;
-        }
-        return false;
+        // f
+        if (!IsInBoard(i1, j1) || !IsInBoard(i2, j2)) return false;
+        // If destination is blocked OR if there is no tile to move OR if the tile we want to move is immovable, return false.
+        if (data[i2, j2] || !data[i1, j1] || !data[i1, j1].GetComponent<Tile>().IsMovable()) return false;
+        // if there is no path, return false
+        if (!IsPathOpen(i1, j1, i2, j2)) return false;
+        
+        data[i2, j2] = data[i1, j1];
+        data[i1, j1] = null;
+        data[i2, j2].GetComponent<Tile>().MoveToPositionOnBoard(i2,j2, false, this);
+        return true;
+        
     }
 
+    /// <summary>
+    /// Determines if there is an open path between 2 spaces (if they can be found by moving adjacently)
+    /// NOTE: If the dimensions of the tiles or their padding changes, YOU NEED TO UPDATE THE VALUES HERE.
+    /// Assumes board is parallel to Z plane and tiles are at z=0
+    /// </summary>
+    /// <param name="i1"></param>
+    /// <param name="j1"></param>
+    /// <param name="i2"></param>
+    /// <param name="j2"></param>
+    /// <returns>true if a straight line path exists, false if there is something in the way.</returns>
+    public bool IsPathOpen(int i1, int j1, int i2, int j2)
+    {
+        // The idea here is to "rasterize" the line of movemnet and see if any tile is in the way.
+        // we do this by casting 3 rays, one through the center of the origin tile and 2 left and right of the direction of motion.
+        // we do not move if any of the 3 rays are obstructed -- this means that there is not enough space for a single
+        // tile to squeeze through.
+        // create an offset JUST big enough so that the rays can hit the right tiles.
+        float offsetDistance = 0.3f;
+
+        // we will have 4 possible origin points for our rays, one in each corner of the tile
+        List<Vector3> offsets = new List<Vector3>()
+        {
+            new Vector3(1, 1, 0),
+            new Vector3(-1, 1, 0),
+            new Vector3(-1, -1, 0),
+            new Vector3(1, -1, 0),
+        };
+        // Ray Casting implementation -- we are doing this using 2D casting which does not take z axis into account.
+        // this implementation will need to be changed if we switch to a 3D model.
+
+        Vector3 target = backgroundTiles[i2, j2].transform.position;
+        Vector2 direction = target - backgroundTiles[i1, j1].transform.position;
+        float distance = direction.magnitude;
+        int layerMask = 1 << TILE_PHYSICS_LAYER;
+        foreach( Vector2 vOff in offsets)
+        {
+            // we add direction.normalized because we want the ray to start off of our home tile in the direction of casting
+            // so that we do not have a false positive collision
+            Vector2 origin = (Vector2)backgroundTiles[i1, j1].transform.position + offsetDistance * vOff;
+            Debug.DrawRay(origin, direction, Color.red, 10f);
+            // since the ray starts at our home tile, we will always have 1 hit. If we have more than 1, something is in the way
+            if(Physics2D.RaycastAll(origin, direction, distance, layerMask).Length > 1) return false;
+        }
+        return true;
+    }  
+    
     public bool CanBreakAt(int i, int j)
     {
         return data[i, j].GetComponent<Tile>().CanBreakAt(i, j);
@@ -139,6 +196,7 @@ public class GameBoard : MonoBehaviour
                 // if there is no hole here,Make the background tile asset
                 Vector3 pos = BoardToWorldCoordinates(i, j);
                 backgroundTiles[i, j] = Instantiate(tilePrefab, pos, Quaternion.identity, boardObj.transform);
+                backgroundTiles[i, j].name = "BG_Tile " + i + " " + j;
                 SpriteRenderer spr = backgroundTiles[i, j].GetComponentInChildren<SpriteRenderer>();
                 spr.sprite = holeData[i,j] ? tiles[2]: ((goalData[i, j]) ? tiles[1] : tiles[0]);
                 // backgroundTiles[i, j].GetComponentInChildren<TileController>().SetCoords(i, j);
@@ -149,6 +207,20 @@ public class GameBoard : MonoBehaviour
                 }
             }
         }
+    }
+
+
+    // HELPER FUNCTIONS
+
+    /// <summary>
+    /// Returns whether the given board coordinate pair is within the bounds of the game board.
+    /// </summary>
+    /// <param name="i"></param>
+    /// <param name="j"></param>
+    /// <returns></returns>
+    public bool IsInBoard(int i, int j)
+    {
+        return i >= 0 && i < boardWidth && j >= 0 && j < boardHeight;
     }
 
     /// <summary>

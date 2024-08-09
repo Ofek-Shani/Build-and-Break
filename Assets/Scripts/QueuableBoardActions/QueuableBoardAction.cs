@@ -14,7 +14,7 @@ public abstract class QueuableBoardAction
     public GameObject caller;
 
     // TODO: find a way to automatically populate this list with all derived types of this class.
-    static List<Type> stackableTypes = new() { typeof(QueuableBreak) };
+    static List<Type> stackableTypes = new() { typeof(QueuableBreak), typeof(QueuableMove)};
 
     /// <summary>
     /// Does something to the game board (depends on subtype)
@@ -55,6 +55,7 @@ public abstract class QueuableBoardAction
         }
         // ACTION STACKING
         var stackedSortedActions = new Dictionary<Vector2Int, List<QueuableBoardAction>>(sortedActions);
+        //Debug.Log("Tiles affected by this turn: " + sortedActions.Count);
         // this is done on a per-tile basis.
         // For each tile's action set, we cycle through all 
         foreach (KeyValuePair<Vector2Int, List<QueuableBoardAction>> entry in sortedActions)

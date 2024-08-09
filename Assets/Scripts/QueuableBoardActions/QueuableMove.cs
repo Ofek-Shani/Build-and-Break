@@ -11,11 +11,18 @@ public class QueuableMove : QueuableBoardAction
     public QueuableMove(Vector2Int newCoords, Vector2Int newMoveVector, GameObject callerName) : base(newCoords, callerName)
     {
         moveVector = newMoveVector;
+        //Debug.Log("Adding new QueuableMove affecting tile " + newCoords.ToString() + " with power " + moveVector.ToString());
     }
 
     public override void Act(GameBoard board)
     {
+        //Debug.Log("Moving from " + coords.ToString() + " to " + (moveVector+coords).ToString());
         board.MoveTo(coords.x, coords.y, coords.x + moveVector.x, coords.y + moveVector.y);
+    }
+
+    public override string ToString()
+    {
+        return "QueuableMove with origin " + coords.ToString()+ " and power" + moveVector.ToString();
     }
 
     /// <summary>
@@ -51,6 +58,7 @@ public class QueuableMove : QueuableBoardAction
     /// <param name="qActions"></param>
     /// <returns></returns>
     public static List<QueuableBoardAction> Stack(List<QueuableBoardAction> qActions) {
+        // Debug.Log("Stacking Wind Effects on list of length " + qActions.Count);
         List<QueuableBoardAction> toReturn = new();
         Vector2Int moveVec = new();
         foreach(QueuableBoardAction qAct in qActions)
@@ -59,6 +67,7 @@ public class QueuableMove : QueuableBoardAction
             else toReturn.Add(qAct);
         }
         if (moveVec != Vector2Int.zero) toReturn.Add(new QueuableMove(qActions[0].coords, moveVec, null));
+        //Debug.Log("Post stack list count: " + qActions.Count);
         return toReturn;
     }
 }

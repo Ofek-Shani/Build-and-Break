@@ -11,8 +11,6 @@ public class BurstTile : Tile
         ActionQueue.Instance.QueueAction(new QueuableBreak(new Vector2Int(i + 1, j), gameObject));
         ActionQueue.Instance.QueueAction(new QueuableBreak(new Vector2Int(i, j - 1), gameObject));
         ActionQueue.Instance.QueueAction(new QueuableBreak(new Vector2Int(i, j + 1), gameObject));
-        Destroy(gameObject);
-        return true;
-        
+        return base.Break(i, j, board);
     }
 }
