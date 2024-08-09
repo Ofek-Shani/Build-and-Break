@@ -10,13 +10,13 @@ public class ManageGame : MonoBehaviour
     // CONFIGURABLE CONSTANTS
     const float TIME_TO_WIN_CHECK = 1; // how long do we wait after the last move before we check for win?
 
-    // Use this to determine which sets of levels to draw from.
-    int levelGroupNumber = 3;
+    
 
     bool playingGame = true;
 
-    [SerializeField] int startingLevel = 1, numLevels = 8;
-    int currentLevel;
+    [SerializeField] int startingLevel = 1, startingLevelGroup = 1, numLevels = 9, numLevelGroups = 2;
+    // level is the current level number, currentLevelGroup is which level group we draw from.
+    int currentLevel, currentLevelGroup;
     List<PieceData> pieces;
     List<Piece> pieceComponents;
     [SerializeField]
@@ -56,13 +56,14 @@ public class ManageGame : MonoBehaviour
         eraser = GameObject.FindGameObjectWithTag("Eraser");
         ui = GetComponent<UIController>();
         currentLevel = startingLevel;
+        currentLevelGroup = startingLevelGroup;
 
     }
 
     private void Start()
     {
         // Time to load up the first level!
-        LoadLevel(startingLevel);
+        LoadLevel(startingLevel, startingLevelGroup);
     }
 
     // Update is called once per frame
@@ -112,9 +113,14 @@ public class ManageGame : MonoBehaviour
         foreach (Piece p in pieceComponents) Destroy(p.pieceObj);
     }
 
-    void LoadLevel(int levelNumber)
+    /// <summary>
+    /// Loads a given level number levelNumber in group levelGroupNumber
+    /// </summary>
+    /// <param name="levelNumber"></param>
+    /// <param name="levelGroupNumber"></param>
+    void LoadLevel(int levelNumber, int levelGroupNumber)
     {
-        Debug.Log("Loading Level " + levelNumber);
+        Debug.Log("Loading Level " + levelGroupNumber + "-" + levelNumber);
         // first, let's clear everything up
         ui.RemoveAllCards();
         board.ClearBoard();
@@ -127,7 +133,7 @@ public class ManageGame : MonoBehaviour
 
         // Now let's prep the new level.
         // get the board ready...
-        board.FillBoard(levelNumber, levelGroupNumber);
+        board.FillBoard(levelNumber, currentLevelGroup);
         // now let's put together all of the pieces.
         pieces = new List<PieceData>(Resources.LoadAll<PieceData>("Level Group " + levelGroupNumber + "/Piece Scriptables/Level " + levelNumber));
         pieceComponents = new List<Piece>(); // list of all piece components attached to gameobjects
@@ -166,7 +172,7 @@ public class ManageGame : MonoBehaviour
         if (currentLevel <= numLevels)
         {
             Debug.Log("Loading Next Level");
-            LoadLevel(++currentLevel);
+            LoadLevel(++currentLevel, currentLevelGroup);
         }
     }
 
@@ -175,7 +181,7 @@ public class ManageGame : MonoBehaviour
     /// </summary>
     void RestartLevel()
     {
-        LoadLevel(currentLevel);
+        LoadLevel(currentLevel, currentLevelGroup);
     }
 
     /// <summary>
@@ -186,7 +192,7 @@ public class ManageGame : MonoBehaviour
         if (currentLevel > startingLevel)
         {
             Debug.Log("Loading Previous Level");
-            LoadLevel(--currentLevel);
+            LoadLevel(--currentLevel, currentLevelGroup);
         }
     }
 
@@ -197,6 +203,7 @@ public class ManageGame : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.LeftShift))
         {
+            // Switch Levels
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
                 LoadNextLevel();
@@ -204,6 +211,17 @@ public class ManageGame : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 LoadPreviousLevel();
+            }
+            // switch level groups
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                currentLevelGroup = Mathf.Clamp(--currentLevelGroup, 1, numLevelGroups);
+                LoadLevel(currentLevel, currentLevelGroup);
+            }
+            if (Input.GetKeyDown(KeyCode.DownArrow)) 
+            {
+                currentLevelGroup = Mathf.Clamp(++currentLevelGroup, 1, numLevelGroups);
+                LoadLevel(currentLevel, currentLevelGroup);
             }
         }
         else if (Input.GetKeyDown(KeyCode.R)) RestartLevel();

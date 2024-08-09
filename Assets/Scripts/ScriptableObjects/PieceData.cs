@@ -13,7 +13,7 @@ public class PieceData : ScriptableObject
 {
     public Texture2D texture; // sprite representing the tiles this piece contains
     public int cost;// how many pieces need to removed after this is placed?
-    public int level, versionNumber;
+    public int level, levelGroupNumber;
     public bool[,] data; // which cells does this piece occupy?
     public int width, height;
     int pieceNumber; // used only for getting the text
@@ -30,13 +30,13 @@ public class PieceData : ScriptableObject
         if (name != "Remove Piece")
         {
             pieceNumber = int.Parse(name.Split(" ")[1]);
-            path = "Version " + versionNumber + "/Puzzle Data/Pieces/Level " + level + "/Piece " + pieceNumber;
+            path = "Level Group " + levelGroupNumber + "/Puzzle Data/Pieces/Level " + level + "/Piece " + pieceNumber;
             texture = Resources.Load<Texture2D>(path);
         }
         else
         {
             pieceNumber = 0;
-            path = "Version " + versionNumber + "/Puzzle Data/Pieces/RemovePiece";
+            path = "Level Group " + levelGroupNumber + "/Puzzle Data/Pieces/RemovePiece";
             texture = Resources.Load<Texture2D>(path);
         }
 

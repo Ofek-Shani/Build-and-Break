@@ -163,12 +163,12 @@ public class GameBoard : MonoBehaviour
     }
 
 
-    public void FillBoard(int levelNumber, int versionNumber)
+    public void FillBoard(int levelNumber, int levelGroupNumber)
     {
         boardObj = GameObject.FindGameObjectWithTag("Board");
         border = GameObject.FindGameObjectWithTag("Border");
 
-        LevelData level = Resources.Load<LevelData>("Version " + versionNumber + "/Level Scriptables/Level " + levelNumber);
+        LevelData level = Resources.Load<LevelData>("Level Group " + levelGroupNumber + "/Level Scriptables/Level " + levelNumber);
         Texture2D tex = level.texture;
         Sprite[] tiles = Resources.LoadAll<Sprite>("Textures/Tiles/Background Tiles"); // load the sprites we need
         boardHeight = tex.height;
