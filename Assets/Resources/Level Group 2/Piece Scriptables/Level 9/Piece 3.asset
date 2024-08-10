@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8227d45e6e340cb4caaaa8db1140d86b, type: 3}
-  m_Name: Piece 4
+  m_Name: Piece 3
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: c1ed78c5a1c77eb4895ae89cb0e4f285, type: 3}
-  cost: 1
-  level: 7
+  texture: {fileID: 2800000, guid: 5fdae7508e5b607489ce184453a78970, type: 3}
+  cost: 2
+  level: 9
   levelGroupNumber: 2
-  width: 2
-  height: 2
+  width: 3
+  height: 3

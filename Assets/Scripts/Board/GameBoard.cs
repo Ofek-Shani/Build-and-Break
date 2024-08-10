@@ -64,7 +64,7 @@ public class GameBoard : MonoBehaviour
     public bool BreakAt(int i, int j)
     {
         // first, check to see if the tile in question is actually ON the board
-        if (i < 0 || j < 0 || i > boardWidth || j > boardHeight) return false;
+        if (i < 0 || j < 0 || i >= boardWidth || j >= boardHeight) return false;
         // now we can actually do things
         if(!data[i,j] || !data[i,j].GetComponent<Tile>().Break(i, j, this)) return false;
         data[i, j] = null;
