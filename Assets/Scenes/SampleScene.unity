@@ -181,7 +181,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9eaea23fce0b6d84285e104c9ed52e77, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b1c67ffef0c563948be214543abfbde4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -452,10 +452,10 @@ Camera:
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.00085763296
-    y: 0
-    width: 0.99828476
-    height: 1
+    x: 0.0011627907
+    y: 0.003971406
+    width: 0.9976744
+    height: 0.9912629
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 34
@@ -907,7 +907,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingLevel: 1
+  startingLevelGroup: 1
   numLevels: 8
+  numLevelGroups: 2
   tilePrefab: {fileID: 5274023919461612815, guid: a7f05e5a64814564098c41fff32f921e, type: 3}
 --- !u!114 &961370884
 MonoBehaviour:

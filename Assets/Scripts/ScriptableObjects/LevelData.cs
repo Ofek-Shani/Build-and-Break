@@ -11,12 +11,14 @@ public class LevelData : ScriptableObject
 
     private void Awake()
     {
+        levelNumber = int.Parse(name.Split(' ')[1]);
         texture = Resources.Load<Texture2D>("Level Group " + levelGroupNumber + "/Puzzle Data/Levels/Level " + levelNumber);
         //Debug.Log("TEST");
     }
 
     private void OnValidate()
     {
+        levelNumber = int.Parse(name.Split(' ')[1]);
         texture = Resources.Load<Texture2D>("Level Group " + levelGroupNumber + "/Puzzle Data/Levels/Level " + levelNumber);
         //Debug.Log("TEST");
     }

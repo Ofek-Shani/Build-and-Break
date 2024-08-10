@@ -7,7 +7,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8227d45e6e340cb4caaaa8db1140d86b, type: 3}
   m_Name: Piece 1
@@ -15,6 +15,6 @@ MonoBehaviour:
   texture: {fileID: 2800000, guid: 4df30b2a7dc7fcf448c274c6bfe12791, type: 3}
   cost: 1
   level: 1
-  versionNumber: 3
+  levelGroupNumber: 2
   width: 3
   height: 3
