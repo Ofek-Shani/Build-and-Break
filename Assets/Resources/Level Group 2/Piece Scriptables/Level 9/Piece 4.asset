@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Piece 4
   m_EditorClassIdentifier: 
   texture: {fileID: 2800000, guid: e7f76217f862e05409ab529b58bb0aa3, type: 3}
-  cost: 1
+  cost: 2
   level: 9
   levelGroupNumber: 2
   width: 3

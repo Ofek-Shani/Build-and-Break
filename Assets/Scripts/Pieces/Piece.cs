@@ -4,6 +4,9 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
+/// <summary>
+/// Contains all the logic for instantiation, manipulation, and placement of clusters of tiles (aka. Pieces).
+/// </summary>
 public class Piece: MonoBehaviour
 {
 
@@ -13,12 +16,6 @@ public class Piece: MonoBehaviour
     public int width, height;
     public int id, cost;
 
-
-    // enable to make each tile indicate which piece it came from.
-    bool showPieceNumbers = false;
-
-    // struct constructor
-    
     /// <summary>
     /// EFFECTS updates the appearance of tiles within the piece to indicate if they
     /// are placed in the correct spot.

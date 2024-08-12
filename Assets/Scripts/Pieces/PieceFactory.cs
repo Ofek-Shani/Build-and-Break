@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// This class serves to create Piece object instances. It creates an empty gameobject and gives it all necessary components.
+/// </summary>
 public class PieceFactory : MonoBehaviour
 {
     [SerializeField]
-    static GameObject normalTile = Resources.Load<GameObject>("Prefabs/Tiles/Basic Tile");
-    static GameObject unbreakableTile = Resources.Load<GameObject>("Prefabs/Tiles/Unbreakable Tile");
-    static GameObject burstTile = Resources.Load<GameObject>("Prefabs/Tiles/Burst Tile");
-    static GameObject gustTile = Resources.Load<GameObject>("Prefabs/Tiles/Gust Tile");
+    static GameObject normalTile = Resources.Load<GameObject>("Prefabs/Tiles/Tile");
+    static GameObject unbreakableTile = Resources.Load<GameObject>("Prefabs/Tiles/Tile_Unbreakable");
+    static GameObject burstTile = Resources.Load<GameObject>("Prefabs/Tiles/Tile_Burst");
+    static GameObject gustTile = Resources.Load<GameObject>("Prefabs/Tiles/Tile_Gust");
 
     static Dictionary<Color32, GameObject> pieceColors = new Dictionary<Color32, GameObject>()
     {
@@ -40,10 +43,13 @@ public class PieceFactory : MonoBehaviour
         piece.tiles = new GameObject[piece.width, piece.height];
 
         // Set up the GameObject
+        // adding collider
         BoxCollider2D coll = piece.pieceObj.AddComponent<BoxCollider2D>();
         coll.offset = new Vector2(piece.width / 2, -piece.height / 2);
         coll.offset += new Vector2((piece.width % 2 == 0) ? -.5f : 0, (piece.height % 2 == 0) ? .5f : 0);
         coll.size = new Vector2(piece.width, piece.height);
+        // adding lerpabletransform
+        TransformLerper tlerp = piece.pieceObj.AddComponent<TransformLerper>();
         // fill it up with tiles
         //Debug.Log(p.level.ToString() + p.name + " ISNULL " + (p is null) + " DATA IS NULL " + (p.data is null));
         for (int i = 0; i < piece.width; i++)

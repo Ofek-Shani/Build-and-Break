@@ -77,6 +77,7 @@ public class ManageGame : MonoBehaviour
 
             // Set which piece we are controlling
             int keynum = GetPressedNumber() - 1; // subtract 1 to make it more usable as an index for pieces
+            // Let's get the new piece set up.
             if (keynum >= 0 && keynum < pieceComponents.Count && toRemove == 0)
             {
                 foreach (Piece p in pieceComponents) p.pieceObj.SetActive(false);
@@ -272,6 +273,8 @@ public class ManageGame : MonoBehaviour
         controlledPiece = null;
     }
 
+    const float PIECE_LERP_TIME = 0.5f;
+
     /// <summary>
     /// REQUIRES controlledPiece is not null
     /// Makes sure piece is not out of bounds, updates piece tiles, and places the piece when enter is pressed.
@@ -282,8 +285,9 @@ public class ManageGame : MonoBehaviour
         // Handle Cursor Movement
         if (controlledPiece == eraser) HandleCursorMovement(1, 1);
         else HandleCursorMovement(activePiece.width, activePiece.height);
-        controlledPiece.transform.position = (Vector3)Vector2.Scale(boardPosition, new Vector2(1, -1))
+        Vector3 targetPos = (Vector3)Vector2.Scale(boardPosition, new Vector2(1, -1))
             + new Vector3(-board.boardWidth / 2, board.boardHeight / 2, -.5f); //-.5f so that the piece is closer to camera
+        controlledPiece.GetComponent<TransformLerper>().LerpTo(targetPos, false, PIECE_LERP_TIME);
         // update each tile in the piece to reflect if it is placed in the correct spot.
         if (controlledPiece != eraser)
         {
@@ -293,6 +297,7 @@ public class ManageGame : MonoBehaviour
         // handle piece placement -- set each tile object to be a child of the board, then delete the piece parent.
         if (Input.GetKeyDown(KeyCode.Return))
         {
+            controlledPiece.GetComponent<TransformLerper>().SnapTo(targetPos, false);
             if (toRemove >0) // aka if in break mode
             {
                 if (board.data[(int)boardPosition.x, (int)(board.boardHeight - boardPosition.y - 1)] is not null)

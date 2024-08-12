@@ -193,8 +193,8 @@ public class Tile : MonoBehaviour
     public void PlaceVisually()
     {
         transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, 0);
-        anim.Play("Idle-Placed");
-        spr.color = Color.white; // turn off the transparency.
+        anim.Play("Place");
+        //spr.color = Color.white; // turn off the transparency.
     }
 
     public void SetSprite(TileStatus ts)

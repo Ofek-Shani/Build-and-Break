@@ -23,6 +23,7 @@ public class TransformLerper : MonoBehaviour
     public void LerpTo(Vector3 newPos, bool local, float t)
     {
         doLerp = true;
+        lerpTime = t;
         targetPos = local ? newPos - toMove.parent.position : newPos;
     }
     /// <summary>
