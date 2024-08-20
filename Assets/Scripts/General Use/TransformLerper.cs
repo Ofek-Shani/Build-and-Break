@@ -24,7 +24,8 @@ public class TransformLerper : MonoBehaviour
     {
         doLerp = true;
         lerpTime = t;
-        targetPos = local ? newPos - toMove.parent.position : newPos;
+        isLocal = local;
+        targetPos = newPos;
     }
     /// <summary>
     /// immediately snaps to the given position vector. Set local to true if lerping to local coordinates.
@@ -33,8 +34,9 @@ public class TransformLerper : MonoBehaviour
     /// <param name="local"></param> // whether the position is in local coordinates or not
     public void SnapTo(Vector3 newPos, bool local)
     {
-        doLerp = true;
+        doLerp = false;
         isLocal = local;
+        targetPos = newPos;
         if(isLocal) toMove.localPosition = targetPos;
         else toMove.position = targetPos;
     }

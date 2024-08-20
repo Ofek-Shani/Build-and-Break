@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8227d45e6e340cb4caaaa8db1140d86b, type: 3}
   m_Name: Piece 1
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: 6e5139c18ec1337428eb5252f78b390d, type: 3}
+  texture: {fileID: 2800000, guid: bc92f60761512bf48880fcff0583db7b, type: 3}
   cost: 1
-  level: 8
+  level: 7
   levelGroupNumber: 2
   width: 2
   height: 2
