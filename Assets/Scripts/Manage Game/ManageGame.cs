@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -13,6 +14,7 @@ public class ManageGame : MonoBehaviour
 
     // external components
     Image backgroundSpr;
+    TMP_Text levelInfoText;
 
     // false when the level is over and waiting for the next level to load.
     bool playingGame = true;
@@ -55,13 +57,18 @@ public class ManageGame : MonoBehaviour
     }
 
     private void Awake()
-    { 
+    {
+
+        ui = GetComponent<UIController>();
         board = gameObject.GetComponent<GameBoard>();
         actionQueue = gameObject.GetComponent<ActionQueue>();
+
         boardObj = GameObject.FindGameObjectWithTag("Board");
         eraser = GameObject.FindGameObjectWithTag("Eraser");
         backgroundSpr = GameObject.FindGameObjectWithTag("Background").GetComponent<Image>();
-        ui = GetComponent<UIController>();
+        levelInfoText = GameObject.FindGameObjectWithTag("Level Info Text").GetComponent<TMP_Text>();
+
+
         currentLevel = startingLevel;
         currentLevelGroup = startingLevelGroup;
 
@@ -175,6 +182,7 @@ public class ManageGame : MonoBehaviour
 
         // and now set the proper background.
         backgroundSpr.sprite = Resources.Load<Sprite>("Textures/Backgrounds/Background " + levelGroupNumber);
+        levelInfoText.text = "Level " + levelGroupNumber + "-" + levelNumber; 
     }
 
     /// <summary>
@@ -187,6 +195,12 @@ public class ManageGame : MonoBehaviour
             Debug.Log("Loading Next Level");
             LoadLevel(++currentLevel, currentLevelGroup);
         }
+        else if (currentLevelGroup <= numLevelGroups)
+        {
+            Debug.Log("Loading first level in the next level group");
+            LoadLevel(currentLevel = 1, ++currentLevelGroup);
+        }
+        else LoadLevel(currentLevel = 1, currentLevelGroup = 1);
     }
 
     /// <summary>
