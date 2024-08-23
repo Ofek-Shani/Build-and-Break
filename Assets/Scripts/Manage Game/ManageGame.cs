@@ -41,7 +41,7 @@ public class ManageGame : MonoBehaviour
     /// <summary>
     /// The board position of the current active piece.
     /// </summary>
-    Vector2 boardPosition = Vector2.zero;
+    Vector2Int boardPosition = Vector2Int.zero;
     // how many  more pieces need to be broken before we can place the next piece.
     int toRemove = 0; // if 0, we are in place mode
 
@@ -85,6 +85,9 @@ public class ManageGame : MonoBehaviour
     {
         if (playingGame)
         {
+
+            bool snapPieceMovement = false;
+
             HandleLevelManipInputs();
 
             StartCoroutine(WinCheck());
@@ -99,8 +102,9 @@ public class ManageGame : MonoBehaviour
                 activePiece.pieceObj.SetActive(true);
                 controlledPiece = activePiece.pieceObj;
                 ui.MoveCardOut(keynum);
+                snapPieceMovement = true;
             }
-            if (controlledPiece is not null) ControlPiece();
+            if (controlledPiece is not null) ControlPiece(snapPieceMovement);
         }
     }
 
@@ -305,7 +309,7 @@ public class ManageGame : MonoBehaviour
     /// REQUIRES controlledPiece is not null
     /// Makes sure piece is not out of bounds, updates piece tiles, and places the piece when enter is pressed.
     /// </summary>
-    void ControlPiece()
+    void ControlPiece(bool snapTo = false)
     {
         // clamp board position so that the piece never goes off of the board.
         // Handle Cursor Movement
@@ -313,17 +317,20 @@ public class ManageGame : MonoBehaviour
         else HandleCursorMovement(activePiece.width, activePiece.height);
         Vector3 targetPos = (Vector3)Vector2.Scale(boardPosition, new Vector2(1, -1))
             + new Vector3(-board.boardWidth / 2, board.boardHeight / 2, -.5f); //-.5f so that the piece is closer to camera
-        controlledPiece.GetComponent<TransformLerper>().LerpTo(targetPos, false, PIECE_LERP_TIME);
+        if (snapTo) controlledPiece.GetComponent<TransformLerper>().SnapTo(targetPos, false);
+        else controlledPiece.GetComponent<TransformLerper>().LerpTo(targetPos, false, PIECE_LERP_TIME);
+
         // update each tile in the piece to reflect if it is placed in the correct spot.
         if (controlledPiece != eraser)
         {
             //Debug.Log((board is not null) + " " + (board.data is not null));
             activePiece.UpdateTiles(Vector2Int.RoundToInt(new Vector2(boardPosition.x, board.boardHeight - boardPosition.y - activePiece.height)), board.data, board);
         }
-        // handle piece placement -- set each tile object to be a child of the board, then delete the piece parent.
+
         if (Input.GetKeyDown(KeyCode.Return))
         {
             controlledPiece.GetComponent<TransformLerper>().SnapTo(targetPos, false);
+            // Tile break handling
             if (toRemove >0) // aka if in break mode
             {
                 if (board.data[(int)boardPosition.x, (int)(board.boardHeight - boardPosition.y - 1)] is not null)
@@ -344,15 +351,15 @@ public class ManageGame : MonoBehaviour
                 }
                 
             }
+            // piece placement handling
             else if(controlledPiece != null) // aka if we are in build mode and have a piece to place
             {
-                toRemove = activePiece.cost;
                 // for some reason we need to place the pieces in normal x order but reverse y order -- just roll with it.
                 if (PlacePieceAt(activePiece, (int)boardPosition.x, (int)(board.boardHeight - boardPosition.y - activePiece.height)))
                 {
-                    ToggleBreakMode(true);
+                    toRemove = activePiece.cost;
+                    ToggleBreakMode(toRemove > 0);
                     ui.SetPhaseText(toRemove);
-                    if (toRemove == 0) ToggleBreakMode(false);
                 }
                 else toRemove = 0;
             }
@@ -386,6 +393,7 @@ public class ManageGame : MonoBehaviour
         if(breakModeOn)
         {
             controlledPiece = eraser;
+            controlledPiece.GetComponent<TransformLerper>().SnapTo(BoardToWorldPosition(boardPosition), false);
             eraser.SetActive(true);
             ui.DisableCards();
         }
@@ -404,12 +412,18 @@ public class ManageGame : MonoBehaviour
     /// <param name="pieceHeight"></param>
     void HandleCursorMovement(int pieceWidth, int pieceHeight)
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow)) boardPosition += Vector2.down;
-        if (Input.GetKeyDown(KeyCode.DownArrow)) boardPosition += Vector2.up;
-        if (Input.GetKeyDown(KeyCode.LeftArrow)) boardPosition += Vector2.left;
-        if (Input.GetKeyDown(KeyCode.RightArrow)) boardPosition += Vector2.right;
+        if (Input.GetKeyDown(KeyCode.UpArrow)) boardPosition += Vector2Int.down;
+        if (Input.GetKeyDown(KeyCode.DownArrow)) boardPosition += Vector2Int.up;
+        if (Input.GetKeyDown(KeyCode.LeftArrow)) boardPosition += Vector2Int.left;
+        if (Input.GetKeyDown(KeyCode.RightArrow)) boardPosition += Vector2Int.right;
 
-        boardPosition = new Vector2(Mathf.Clamp(boardPosition.x, 0, board.boardWidth - pieceWidth),
+        boardPosition = new Vector2Int(Mathf.Clamp(boardPosition.x, 0, board.boardWidth - pieceWidth),
             Mathf.Clamp(boardPosition.y, 0, board.boardHeight - pieceHeight));
+    }
+
+    Vector3 BoardToWorldPosition(Vector2Int pos)
+    {
+        return (Vector3)Vector2.Scale(pos, new Vector2(1, -1))
+            + new Vector3(-board.boardWidth / 2, board.boardHeight / 2, -.5f); //-.5f so that the piece is closer to camera
     }
 }
