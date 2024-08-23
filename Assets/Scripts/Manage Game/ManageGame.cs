@@ -195,7 +195,7 @@ public class ManageGame : MonoBehaviour
             Debug.Log("Loading Next Level");
             LoadLevel(++currentLevel, currentLevelGroup);
         }
-        else if (currentLevelGroup <= numLevelGroups)
+        else if (currentLevelGroup < numLevelGroups)
         {
             Debug.Log("Loading first level in the next level group");
             LoadLevel(currentLevel = 1, ++currentLevelGroup);
