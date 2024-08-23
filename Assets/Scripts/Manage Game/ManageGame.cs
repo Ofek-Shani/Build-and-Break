@@ -3,15 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class ManageGame : MonoBehaviour
 {
     // CONFIGURABLE CONSTANTS
-    const float TIME_TO_WIN_CHECK = 1; // how long do we wait after the last move before we check for win?
+    const float TIME_TO_WIN_CHECK = 1; // how long do we wait (in seconds) after the last move before we check for win?
 
-    
 
+    // external components
+    Image backgroundSpr;
+
+    // false when the level is over and waiting for the next level to load.
     bool playingGame = true;
 
     [SerializeField] int startingLevel = 1, startingLevelGroup = 1, numLevels = 9, numLevelGroups = 2;
@@ -33,6 +36,9 @@ public class ManageGame : MonoBehaviour
     // Game controller important variables
     GameObject controlledPiece = null;
     Piece activePiece;
+    /// <summary>
+    /// The board position of the current active piece.
+    /// </summary>
     Vector2 boardPosition = Vector2.zero;
     // how many  more pieces need to be broken before we can place the next piece.
     int toRemove = 0; // if 0, we are in place mode
@@ -54,6 +60,7 @@ public class ManageGame : MonoBehaviour
         actionQueue = gameObject.GetComponent<ActionQueue>();
         boardObj = GameObject.FindGameObjectWithTag("Board");
         eraser = GameObject.FindGameObjectWithTag("Eraser");
+        backgroundSpr = GameObject.FindGameObjectWithTag("Background").GetComponent<Image>();
         ui = GetComponent<UIController>();
         currentLevel = startingLevel;
         currentLevelGroup = startingLevelGroup;
@@ -121,6 +128,8 @@ public class ManageGame : MonoBehaviour
     /// <param name="levelGroupNumber"></param>
     void LoadLevel(int levelNumber, int levelGroupNumber)
     {
+
+
         Debug.Log("Loading Level " + levelGroupNumber + "-" + levelNumber);
         // first, let's clear everything up
         ui.RemoveAllCards();
@@ -163,6 +172,9 @@ public class ManageGame : MonoBehaviour
         }
         // make all of the actual pieces invisible so they don't clog the screen
         foreach (Piece p in pieceComponents) p.pieceObj.SetActive(false);
+
+        // and now set the proper background.
+        backgroundSpr.sprite = Resources.Load<Sprite>("Textures/Backgrounds/Background " + levelGroupNumber);
     }
 
     /// <summary>

@@ -391,6 +391,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96063e3d6c79a454c9d037e905a57e6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LERP_TIME: 0.25
   tileVisualType: Basic
   ignoreDuringWinCheck: 0
   sprites: []

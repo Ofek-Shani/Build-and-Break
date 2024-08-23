@@ -7,7 +7,7 @@ public class ActionQueue : MonoBehaviour
 {
     // how many FixedUpdates should we wait in between queue clears?
     // we do this to add padding between each "cycle" in the aftermath of a Break.
-    const int FRAMES_BETWEEN_PROCESSES = 5;
+    const int FRAMES_BETWEEN_PROCESSES = 3;
     int framesUntilNextProcess = 0;
 
     GameBoard board;

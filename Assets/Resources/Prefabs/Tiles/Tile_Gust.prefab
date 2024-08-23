@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5274023918880045651, guid: a7f05e5a64814564098c41fff32f921e, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -285191172, guid: 985306b0864422d4e907322689681f83, type: 3}
     - target: {fileID: 5274023919461612811, guid: a7f05e5a64814564098c41fff32f921e, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -53,7 +57,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5274023919461612815, guid: a7f05e5a64814564098c41fff32f921e, type: 3}
       propertyPath: m_Name
-      value: Gust Tile
+      value: Tile_Gust
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5274023919461612809, guid: a7f05e5a64814564098c41fff32f921e, type: 3}
@@ -75,6 +79,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56692905863c8744886c840cfc75a08a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LERP_TIME: 0.5
   tileVisualType: Gust
   ignoreDuringWinCheck: 0
   sprites: []

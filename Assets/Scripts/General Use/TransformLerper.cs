@@ -6,7 +6,10 @@ public class TransformLerper : MonoBehaviour
 {
     Transform toMove;
 
-    float lerpTime = 0.1f;
+    /// <summary>
+    /// how fast the tile moves. 0.1 is the initial value, and is set by the LerpTo function.
+    /// </summary>
+    float lerpSpeed = 0.1f;
 
     bool isLocal = true;
 
@@ -23,7 +26,7 @@ public class TransformLerper : MonoBehaviour
     public void LerpTo(Vector3 newPos, bool local, float t)
     {
         doLerp = true;
-        lerpTime = t;
+        lerpSpeed = t;
         isLocal = local;
         targetPos = newPos;
     }
@@ -56,8 +59,8 @@ public class TransformLerper : MonoBehaviour
     {
         if (doLerp)
         {
-            if (isLocal) toMove.localPosition = Vector3.Lerp(toMove.localPosition, targetPos, lerpTime);
-            else toMove.position = Vector3.Lerp(toMove.position, targetPos, lerpTime);
+            if (isLocal) toMove.localPosition = Vector3.Lerp(toMove.localPosition, targetPos, lerpSpeed);
+            else toMove.position = Vector3.Lerp(toMove.position, targetPos, lerpSpeed);
         }
     }
 }

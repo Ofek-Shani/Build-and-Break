@@ -14,7 +14,7 @@ using static TMPro.TMP_Compatibility;
 public class Tile : MonoBehaviour
 {
 
-    [SerializeField] const float LERP_TIME = 0.75f;
+    [SerializeField] float LERP_TIME = 0.5f;
 
     Vector2Int boardPosition = new();
 

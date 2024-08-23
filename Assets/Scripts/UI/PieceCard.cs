@@ -5,9 +5,15 @@ using TMPro;
 
 public class PieceCard : MonoBehaviour
 {
+    [SerializeField] float LERP_TIME = 1;
+
     [SerializeField]
     GameObject keyTextObject, costTextObject, grayOutOverlayObject;
+    /// <summary>
+    /// child gameobject that stores all of the card components
+    /// </summary>
     public GameObject anchorObject { get; private set; }
+    TransformLerper anchorTLerp;
     [SerializeField]
     float extendDistance = 1; // how much the card moves when it is selected.
     bool isOut;
@@ -20,6 +26,7 @@ public class PieceCard : MonoBehaviour
         keyText = keyTextObject.GetComponent<TextMeshPro>();
         costText = costTextObject.GetComponent<TextMeshPro>();
         overlaySpr = grayOutOverlayObject.GetComponent<SpriteRenderer>();
+        anchorTLerp = anchorObject.GetComponent<TransformLerper>();
     }
 
     public void SetKeyText(string text_in)
@@ -39,7 +46,8 @@ public class PieceCard : MonoBehaviour
     {
         if (!isOut)
         {
-            anchorObject.transform.position += new Vector3(extendDistance, 0, 0);
+            //anchorObject.transform.position += new Vector3(extendDistance, 0, 0);
+            anchorTLerp.LerpTo(new Vector3(extendDistance, 0, 0), true, LERP_TIME);
             isOut = true;
         }
     }
@@ -52,7 +60,7 @@ public class PieceCard : MonoBehaviour
     {
         if (isOut)
         {
-            anchorObject.transform.position -= new Vector3(extendDistance, 0, 0);
+            anchorTLerp.LerpTo(new Vector3(0, 0, 0), true, LERP_TIME);
             isOut = false;
         }
     }

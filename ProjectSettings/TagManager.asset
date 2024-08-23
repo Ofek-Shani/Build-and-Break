@@ -9,6 +9,7 @@ TagManager:
   - Phase Text
   - Phase Subtext
   - Border
+  - Background
   layers:
   - Default
   - TransparentFX
