@@ -75,8 +75,17 @@ public class UIController : MonoBehaviour
         // now add the card picture
         GameObject icon = Instantiate(piece.pieceObj, tempController.anchorObject.transform);
         icon.SetActive(true);
-        float scalingFactor = 1f / Mathf.Max(piece.width, piece.height);
+        float maxDim = Mathf.Max(piece.width, piece.height);
+        float scalingFactor = 1f / maxDim;
         icon.transform.localScale = new Vector2(1f, 1f) * scalingFactor;
+        // when the dim is more than 3 we need to apply a special rule:
+        // multiply the offset by the number of full tiles above the middle tile.
+        // if even, multiply by 1.5. 
+        // TODO: Make this simpler/integrate it into the main scaling algo
+        // this "special case" stuff is pretty ugly.
+        if (maxDim > 3) {
+            scalingFactor *= Mathf.Floor(maxDim / 2) * (maxDim % 2 == 0 ? 1.5f : 1);
+        };
         // set the position of the picture
         Vector2 newPos = new Vector2(-1, 1) * scalingFactor;
         //icon.transform.localPosition = Vector2.Scale(new Vector2(-1, 1), icon.transform.localScale);
